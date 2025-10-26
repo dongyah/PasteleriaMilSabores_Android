@@ -5,15 +5,111 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F7F7F7"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <!-- Contenedor central (Simula la tarjeta de la app) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_card_background"
+        android:elevation="8dp"
+        android:padding="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Título principal -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pastelería Mil Sabores"
+            android:textColor="#C32C52"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/tvSubtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <!-- Subtítulo -->
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Acceso de Administración"
+            android:textColor="#4A4A4A"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toTopOf="@+id/etUsername"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <!-- Campo de Usuario -->
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Usuario (admin)"
+            android:inputType="text"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvSubtitle" />
+
+        <!-- Campo de Contraseña -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Contraseña (123)"
+            android:inputType="textPassword"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etUsername" />
+
+        <!-- Botón de Ingreso -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="#C32C52"
+            android:padding="16dp"
+            android:text="Ingresar"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+
+        <!-- Credenciales de referencia -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Credenciales de prueba: admin / 123"
+            android:textColor="#A0A0A0"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

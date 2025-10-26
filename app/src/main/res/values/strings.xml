@@ -1,3 +1,44 @@
 <resources>
     <string name="app_name">PasteleriaMilSabores</string>
+    <string name="app_version_footer">Versión 1.0 - Desarrollado por [Tu Nombre] y [Nombre de tu Pareja]</string>
+
+    <string name="app_title">Mil Sabores Admin</string>
+    <string name="login_subtitle">Acceso de Administración</string>
+    <string name="hint_username">Usuario (admin)</string>
+    <string name="hint_password">Contraseña (123)</string>
+    <string name="btn_login">Ingresar</string>
+    <string name="login_credentials">Credenciales de prueba: admin / 123</string>
+    <string name="error_login_invalid">Usuario o contraseña incorrectos.</string>
+
+    <string name="dashboard_title">Gestión de Productos</string>
+    <string name="products_loaded_count">Productos Cargados (%d)</string>
+    <string name="btn_logout">Cerrar Sesión</string>
+    <string name="btn_add_product">Agregar Nuevo Producto</string>
+
+    <string name="product_image_desc">Imagen del Producto de Pastelería</string>
+    <string name="btn_edit_product">Editar Producto</string>
+    <string name="btn_delete_product">Eliminar Producto</string>
+
+    <string name="btn_back">Volver al Dashboard</string>
+    <string name="new_product_title">Cargar Nuevo Producto</string>
+    <string name="edit_product_title">Editar Producto</string>
+
+    <string name="label_photo_ai">Foto del Producto (Edición con IA)</string>
+    <string name="image_placeholder_desc">Toca para cargar foto</string>
+    <string name="btn_ia_fondo_blanco">Fondo Blanco (IA)</string>
+
+    <string name="label_name">Nombre del Producto *</string>
+    <string name="hint_product_name">Ej: Torta de Selva Negra</string>
+
+    <string name="label_price">Precio ($)</string>
+    <string name="hint_price">Ej: 9900</string>
+
+    <string name="label_stock">Stock</string>
+    <string name="hint_stock">Ej: 15</string>
+
+    <string name="label_description">Descripción</string>
+    <string name="hint_description">Describe brevemente el producto o genera con IA...</string>
+    <string name="btn_generate_description">Generar Descripción con IA</string>
+
+    <string name="btn_save_and_pay">Guardar Producto y Simular Pago (Con Flow)</string>
 </resources>

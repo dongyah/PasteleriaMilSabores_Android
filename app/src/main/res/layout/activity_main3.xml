@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F7F7F7"
+    tools:context=".MainActivity3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- BARRA SUPERIOR (Encabezado del Formulario) -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/ivBack"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:clickable="true"
+                android:contentDescription="@string/btn_back"
+                android:onClick="onBackClicked"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="#C32C52"
+                tools:ignore="UsingOnClickInXml" />
+
+            <TextView
+                android:id="@+id/tvFormTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/ivBack"
+                android:text="@string/new_product_title"
+                android:textColor="#C32C52"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <!-- 1. SECCIÓN DE IMAGEN Y IA (Fondo Blanco) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_card_background"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_photo_ai"
+                android:textColor="#4A4A4A"
+                android:textSize="14sp" />
+
+            <!-- Área de Carga/Previsualización de Foto -->
+            <FrameLayout
+                android:id="@+id/flImageContainer"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/dotted_border_background"
+                android:clickable="true"
+                android:onClick="onImageClicked"
+                tools:ignore="UsingOnClickInXml">
+
+                <!-- Placeholder de Texto -->
+                <TextView
+                    android:id="@+id/tvImagePlaceholder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/image_placeholder_desc"
+                    android:textColor="#A0A0A0" />
+
+                <!-- ImageView para la foto (inicialmente invisible) -->
+                <ImageView
+                    android:id="@+id/ivProductImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="@string/product_image_desc"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+            <!-- Botón de IA para Fondo Blanco -->
+            <Button
+                android:id="@+id/btnAiBackground"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_ia_fondo_blanco"
+                android:textColor="#4F46E5"
+                android:onClick="onAiBackgroundClicked"
+                app:icon="@drawable/ic_magic_wand"
+                app:iconTint="#4F46E5"
+                tools:ignore="UsingOnClickInXml" />
+
+        </LinearLayout>
+
+        <!-- 2. CAMPOS DEL PRODUCTO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_name"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etProductName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="@string/hint_product_name"
+            android:inputType="textCapSentences"
+            android:padding="12dp" />
+
+        <!-- Precio y Stock (en una fila horizontal) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <!-- Precio -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_price"
+                    android:textColor="#333333"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/etProductPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/edit_text_background"
+                    android:hint="@string/hint_price"
+                    android:inputType="numberDecimal"
+                    android:padding="12dp" />
+            </LinearLayout>
+
+            <!-- Stock -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_stock"
+                    android:textColor="#333333"
+                    android:textSize="14sp" />
+
+                <EditText
+                    android:id="@+id/etProductStock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/edit_text_background"
+                    android:hint="@string/hint_stock"
+                    android:inputType="number"
+                    android:padding="12dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 3. DESCRIPCIÓN Y IA -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:background="@drawable/rounded_card_background_ia"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_description"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etProductDescription"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/edit_text_background"
+                android:gravity="top"
+                android:hint="@string/hint_description"
+                android:inputType="textMultiLine"
+                android:padding="12dp"
+                android:scrollbars="vertical" />
+
+            <!-- Botón de IA para Descripción -->
+            <Button
+                android:id="@+id/btnAiDescription"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/btn_generate_description"
+                android:textColor="#4F46E5"
+                android:onClick="onAiDescriptionClicked"
+                app:icon="@drawable/ic_wand_text"
+                app:iconTint="#4F46E5"
+                tools:ignore="UsingOnClickInXml" />
+
+        </LinearLayout>
+
+        <!-- 4. BOTÓN DE GUARDAR Y PAGO (Con Flow) -->
+        <Button
+            android:id="@+id/btnSaveAndPay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#C32C52"
+            android:padding="16dp"
+            android:text="@string/btn_save_and_pay"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:onClick="onSaveAndPayClicked"
+            app:cornerRadius="12dp"
+            tools:ignore="UsingOnClickInXml" />
+
+    </LinearLayout>
+</ScrollView>
