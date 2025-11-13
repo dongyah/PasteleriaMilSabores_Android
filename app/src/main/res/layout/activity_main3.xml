@@ -14,7 +14,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- BARRA SUPERIOR (Encabezado del Formulario) -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +26,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:clickable="true"
-                android:contentDescription="@string/btn_back"
+                android:contentDescription="Volver"
                 android:onClick="onBackClicked"
                 android:src="@drawable/ic_arrow_back"
                 app:tint="#C32C52"
@@ -39,13 +38,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_toEndOf="@+id/ivBack"
-                android:text="@string/new_product_title"
+                android:text="Cargar Nuevo Producto"
                 android:textColor="#C32C52"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </RelativeLayout>
 
-        <!-- 1. SECCIÓN DE IMAGEN Y IA (Fondo Blanco) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,62 +55,76 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_photo_ai"
+                android:text="Foto del Producto"
                 android:textColor="#4A4A4A"
                 android:textSize="14sp" />
 
-            <!-- Área de Carga/Previsualización de Foto -->
             <FrameLayout
-                android:id="@+id/flImageContainer"
+                android:id="@+id/flImagePicker"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/dotted_border_background"
                 android:clickable="true"
-                android:onClick="onImageClicked"
-                tools:ignore="UsingOnClickInXml">
-
-                <!-- Placeholder de Texto -->
-                <TextView
-                    android:id="@+id/tvImagePlaceholder"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/image_placeholder_desc"
-                    android:textColor="#A0A0A0" />
-
-                <!-- ImageView para la foto (inicialmente invisible) -->
-                <ImageView
-                    android:id="@+id/ivProductImage"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="@string/product_image_desc"
-                    android:visibility="gone" />
-
+                android:focusable="true"
+                android:onClick="onImagePickerClicked"> <ImageView
+                android:id="@+id/ivProductPreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Vista previa de la imagen del producto"
+                android:visibility="gone" /> <TextView
+                android:id="@+id/tvImagePlaceholder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Toca para seleccionar o tomar una foto"
+                android:textColor="#A0A0A0"
+                android:textSize="16sp" />
             </FrameLayout>
 
-            <!-- Botón de IA para Fondo Blanco -->
-            <Button
-                android:id="@+id/btnAiBackground"
-                style="@style/Widget.AppCompat.Button.Borderless"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Nombre del Archivo de Imagen (para la BD)"
+                android:textColor="#4A4A4A"
+                android:textSize="12sp" />
+            <EditText
+                android:id="@+id/etImageUrl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_ia_fondo_blanco"
-                android:textColor="#4F46E5"
-                android:onClick="onAiBackgroundClicked"
-                app:icon="@drawable/ic_magic_wand"
-                app:iconTint="#4F46E5"
-                tools:ignore="UsingOnClickInXml" />
+                android:layout_marginTop="4dp"
+                android:background="@drawable/edit_text_background"
+                android:hint="Ej: torta_chocolate.jpg"
+                android:inputType="text"
+                android:padding="12dp" />
 
         </LinearLayout>
-
-        <!-- 2. CAMPOS DEL PRODUCTO -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_name"
+            android:text="Código Producto *"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etProductCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Ej: P-MILS-001"
+            android:inputType="textCapCharacters"
+            android:padding="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Producto *"
             android:textColor="#333333"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -124,18 +136,16 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
             android:background="@drawable/edit_text_background"
-            android:hint="@string/hint_product_name"
+            android:hint="Ej: Torta de Selva Negra"
             android:inputType="textCapSentences"
             android:padding="12dp" />
 
-        <!-- Precio y Stock (en una fila horizontal) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="16dp">
 
-            <!-- Precio -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -146,7 +156,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_price"
+                    android:text="Precio ($) *"
                     android:textColor="#333333"
                     android:textSize="14sp" />
 
@@ -156,15 +166,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:background="@drawable/edit_text_background"
-                    android:hint="@string/hint_price"
-                    android:inputType="numberDecimal"
+                    android:hint="Ej: 9900"
+                    android:inputType="number"
                     android:padding="12dp" />
             </LinearLayout>
 
-            <!-- Stock -->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android_layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:layout_marginStart="8dp">
@@ -172,35 +181,76 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/label_stock"
+                    android:text="Stock *"
                     android:textColor="#333333"
                     android:textSize="14sp" />
 
                 <EditText
                     android:id="@+id/etProductStock"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android_layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:background="@drawable/edit_text_background"
-                    android:hint="@string/hint_stock"
+                    android:hint="Ej: 15"
                     android:inputType="number"
                     android:padding="12dp" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- 3. DESCRIPCIÓN Y IA -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/rounded_card_background_ia"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_description"
+                android:text="Stock Crítico (Mínimo) *"
+                android:textColor="#333333"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etCriticalStock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/edit_text_background"
+                android:hint="Ej: 5"
+                android:inputType="number"
+                android:padding="12dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID de Categoría *"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etCategoryId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Ej: 1 (Para Pasteles)"
+            android:inputType="number"
+            android:padding="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical"
+            android:padding="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descripción"
                 android:textColor="#333333"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -212,38 +262,22 @@
                 android:layout_marginTop="4dp"
                 android:background="@drawable/edit_text_background"
                 android:gravity="top"
-                android:hint="@string/hint_description"
+                android:hint="Describe brevemente el producto..."
                 android:inputType="textMultiLine"
                 android:padding="12dp"
                 android:scrollbars="vertical" />
-
-            <!-- Botón de IA para Descripción -->
-            <Button
-                android:id="@+id/btnAiDescription"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/btn_generate_description"
-                android:textColor="#4F46E5"
-                android:onClick="onAiDescriptionClicked"
-                app:icon="@drawable/ic_wand_text"
-                app:iconTint="#4F46E5"
-                tools:ignore="UsingOnClickInXml" />
-
         </LinearLayout>
 
-        <!-- 4. BOTÓN DE GUARDAR Y PAGO (Con Flow) -->
         <Button
-            android:id="@+id/btnSaveAndPay"
+            android:id="@+id/btnSaveProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#C32C52"
             android:padding="16dp"
-            android:text="@string/btn_save_and_pay"
+            android:text="GUARDAR PRODUCTO"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:onClick="onSaveAndPayClicked"
+            android:onClick="onSaveProductClicked"
             app:cornerRadius="12dp"
             tools:ignore="UsingOnClickInXml" />
 

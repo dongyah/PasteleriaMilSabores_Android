@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
 }
 
 android {
@@ -45,4 +46,19 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // --- DEPENDENCIAS MOSHI Y RETROFIT ---
+
+    // Adaptadores de Moshi para Kotlin
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+
+    // Núcleo de Retrofit (Para la API Service)
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    // Convertidor JSON usando Moshi dentro de Retrofit
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+
+    // Procesador de anotaciones para Moshi (KAPT)
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
+
+
 }

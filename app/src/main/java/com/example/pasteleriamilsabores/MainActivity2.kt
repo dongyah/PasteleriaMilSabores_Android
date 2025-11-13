@@ -18,21 +18,21 @@ class MainActivity2 : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
 
         // 1. Crear datos de prueba (Mockup)
-        val mockProducts = listOf(
-            Product("001", "Torta de Chocolate Fusión", 12500.0, 15, "Deliciosa..."),
-            Product("002", "Pie de Limón Clásico", 8900.0, 8, "El clásico...")
+        val mockProductos = listOf(
+            Producto("001", "Torta de Chocolate Fusión", 12500.0, 15, "Deliciosa..."),
+            Producto("002", "Pie de Limón Clásico", 8900.0, 8, "El clásico...")
         )
 
         // 2. Corregir el contador de productos
         val tvProductsCount = findViewById<TextView>(R.id.tvProductsCount)
-        tvProductsCount.text = getString(R.string.products_loaded_count, mockProducts.size)
+        tvProductsCount.text = getString(R.string.products_loaded_count, mockProductos.size)
 
         // 3. Inicializar RecyclerView
         val recyclerView: RecyclerView = findViewById(R.id.recyclerViewProducts)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         // Definir la acción de edición (navegación a MainActivity3 con datos)
-        recyclerView.adapter = ProductAdapter(mockProducts) { product ->
+        recyclerView.adapter = ProductAdapter(mockProductos) { product ->
             val intent = Intent(this, MainActivity3::class.java)
             intent.putExtra("PRODUCT_ID", product.id)
             startActivity(intent)

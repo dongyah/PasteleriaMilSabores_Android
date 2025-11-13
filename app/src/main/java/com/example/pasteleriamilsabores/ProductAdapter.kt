@@ -17,8 +17,8 @@ class ProductViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
 // 2. Define el Adaptador
 class ProductAdapter(
-    private val productList: List<Product>,
-    private val onEditClicked: (Product) -> Unit // Función lambda para manejar el clic en editar
+    private val productoList: List<Producto>,
+    private val onEditClicked: (Producto) -> Unit // Función lambda para manejar el clic en editar
 ) : RecyclerView.Adapter<ProductViewHolder>() {
 
     // Crea el ViewHolder inflando el layout de la fila
@@ -28,9 +28,9 @@ class ProductAdapter(
         return ProductViewHolder(view)
     }
 
-    // Vincula los datos del modelo (Product) a los elementos de la vista (ViewHolder)
+    // Vincula los datos del modelo (Producto) a los elementos de la vista (ViewHolder)
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        val product = productList[position]
+        val product = productoList[position]
 
         holder.tvProductName.text = product.name
         holder.tvProductDetails.text = "Stock: ${product.stock} | Precio: $${product.price}"
@@ -41,5 +41,5 @@ class ProductAdapter(
         }
     }
 
-    override fun getItemCount() = productList.size
+    override fun getItemCount() = productoList.size
 }
