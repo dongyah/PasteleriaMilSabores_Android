@@ -1,20 +1,20 @@
 package com.example.pasteleriamilsabores.ui
 
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope // Importación para Corrutinas
+import androidx.lifecycle.lifecycleScope // Necesario para Corrutinas
 import com.example.pasteleriamilsabores.R
 import com.example.pasteleriamilsabores.model.Categoria
 import com.example.pasteleriamilsabores.repository.ProductosApiRepository
 import kotlinx.coroutines.launch
-import android.widget.ArrayAdapter // Importación para llenar el Spinner
 
 class MainActivity3 : AppCompatActivity() {
 
-    // Declaración de las Vistas (lateinit var corregidas)
+    // Declaración de las Vistas (lateinit var)
     private lateinit var etProductCode: EditText
     private lateinit var etProductName: EditText
     private lateinit var etProductDescription: EditText
@@ -25,7 +25,7 @@ class MainActivity3 : AppCompatActivity() {
     private lateinit var spinnerCategory: Spinner
     private lateinit var btnSaveProduct: Button
     private lateinit var ivProductPreview: ImageView
-    private lateinit var flImagePicker: FrameLayout // FrameLayout para el clic de la foto
+    private lateinit var flImagePicker: FrameLayout
 
     // Lista para almacenar los objetos Categoria cargados de la API
     private var listaCategorias: List<Categoria> = emptyList()
@@ -48,10 +48,10 @@ class MainActivity3 : AppCompatActivity() {
         spinnerCategory = findViewById(R.id.spinnerCategory)
         btnSaveProduct = findViewById(R.id.btnSaveProduct)
         ivProductPreview = findViewById(R.id.ivProductPreview)
-        flImagePicker = findViewById(R.id.flImagePicker) // Inicializamos el FrameLayout
+        flImagePicker = findViewById(R.id.flImagePicker)
 
         // =======================================================
-        // 2. Cargar Datos y Listeners
+        // 2. Cargar Categorías y Listeners
         // =======================================================
         cargarCategorias() // Función para llenar el Spinner
 
@@ -68,17 +68,17 @@ class MainActivity3 : AppCompatActivity() {
      * Maneja el clic en el botón de la flecha de volver atrás.
      */
     fun onBackClicked(view: View) {
+        // En caso de solo cerrar el formulario sin guardar, notificamos el cierre (CANCELADO)
+        setResult(Activity.RESULT_CANCELED)
         finish()
     }
 
     /**
      * Maneja el clic en el FrameLayout para la selección de foto.
-     * Requerido por android:onClick="onImagePickerClicked" en el XML.
      */
     fun onImagePickerClicked(view: View) {
-        // Aquí se iniciaría la actividad de la cámara o el selector de galería
+        // Aquí se usarían las clases de tu profesor (CameraManager, CamaraUtils)
         Toast.makeText(this, "Iniciando selección de foto (Lógica de cámara/galería).", Toast.LENGTH_LONG).show()
-        // base64Image = "..." (Aquí se obtendría el Base64 real)
     }
 
     // =======================================================
@@ -86,7 +86,7 @@ class MainActivity3 : AppCompatActivity() {
     // =======================================================
 
     /**
-     * Usa Corrutinas para obtener la lista de categorías desde la API (GET) y llenar el Spinner.
+     * Usa Corrutinas para obtener la lista de categorías (GET) y llenar el Spinner.
      */
     private fun cargarCategorias() {
         lifecycleScope.launch {
@@ -129,7 +129,7 @@ class MainActivity3 : AppCompatActivity() {
         val categoriaId: Int = if (posicionSeleccionada >= 0 && listaCategorias.isNotEmpty()) {
             listaCategorias[posicionSeleccionada].id
         } else {
-            1 // Valor de seguridad
+            1 // Valor de seguridad si la lista está vacía (asumimos ID 1)
         }
 
         // Usar la cadena Base64 (si existe) o el texto del campo URL
@@ -159,12 +159,20 @@ class MainActivity3 : AppCompatActivity() {
             resultado.onSuccess { respuesta ->
                 if (respuesta.status == "success") {
                     Toast.makeText(this@MainActivity3, "ÉXITO: ${respuesta.message}", Toast.LENGTH_LONG).show()
+
+                    // ⭐️ CLAVE PARA EL REFRESCO: Indica éxito y cierra
+                    setResult(Activity.RESULT_OK)
                     finish()
+
                 } else {
                     Toast.makeText(this@MainActivity3, "ERROR BD: ${respuesta.message}", Toast.LENGTH_LONG).show()
+                    setResult(Activity.RESULT_CANCELED) // Fallo, no recargar
+                    finish()
                 }
             }.onFailure { exception ->
                 Toast.makeText(this@MainActivity3, "ERROR DE CONEXIÓN: ${exception.message}", Toast.LENGTH_LONG).show()
+                setResult(Activity.RESULT_CANCELED) // Fallo, no recargar
+                finish()
             }
         }
     }
