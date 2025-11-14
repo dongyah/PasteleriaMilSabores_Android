@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F7F7"
-    tools:context=".MainActivity3">
+    tools:context=".ui.MainActivity3">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,20 +68,24 @@
                 android:background="@drawable/dotted_border_background"
                 android:clickable="true"
                 android:focusable="true"
-                android:onClick="onImagePickerClicked"> <ImageView
-                android:id="@+id/ivProductPreview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:contentDescription="Vista previa de la imagen del producto"
-                android:visibility="gone" /> <TextView
-                android:id="@+id/tvImagePlaceholder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Toca para seleccionar o tomar una foto"
-                android:textColor="#A0A0A0"
-                android:textSize="16sp" />
+                android:onClick="onImagePickerClicked">
+
+                <ImageView
+                    android:id="@+id/ivProductPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Vista previa de la imagen del producto"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/tvImagePlaceholder"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Toca para seleccionar o tomar una foto"
+                    android:textColor="#A0A0A0"
+                    android:textSize="16sp" />
             </FrameLayout>
 
             <TextView
@@ -97,11 +101,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/edit_text_background"
-                android:hint="Ej: torta_chocolate.jpg"
+                android:hint="Ej: torta_chocolate.jpg (Usado para Base64 o URL)"
                 android:inputType="text"
                 android:padding="12dp" />
 
         </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -173,7 +178,7 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android_layout_height="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:layout_marginStart="8dp">
@@ -188,7 +193,7 @@
                 <EditText
                     android:id="@+id/etProductStock"
                     android:layout_width="match_parent"
-                    android_layout_height="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:background="@drawable/edit_text_background"
                     android:hint="Ej: 15"
@@ -224,21 +229,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ID de Categoría *"
+            android:text="Seleccionar Categoría *"
             android:textColor="#333333"
             android:textSize="14sp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etCategoryId"
+        <Spinner
+            android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="12dp"
             android:background="@drawable/edit_text_background"
-            android:hint="Ej: 1 (Para Pasteles)"
-            android:inputType="number"
-            android:padding="12dp" />
+            android:padding="12dp"
+            android:spinnerMode="dropdown" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -277,7 +281,6 @@
             android:text="GUARDAR PRODUCTO"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:onClick="onSaveProductClicked"
             app:cornerRadius="12dp"
             tools:ignore="UsingOnClickInXml" />
 

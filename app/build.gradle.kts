@@ -60,5 +60,8 @@ dependencies {
     // Procesador de anotaciones para Moshi (KAPT)
     kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1")
 
+    // Interceptor de OkHttp para loguear requests/responses (Maneja el LoggingInterceptor)
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
 
 }

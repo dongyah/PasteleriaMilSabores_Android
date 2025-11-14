@@ -4,68 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@android:color/white"
+    android:layout_marginBottom="10dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:padding="12dp">
 
-        <TextView
-            android:id="@+id/tvProductImage"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="#FFC0CB"
-            android:gravity="center"
-            android:text="Torta"
-            android:textColor="#C32C52"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/ivProductIcon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/ic_check_small"
+            android:contentDescription="Ícono del Producto"
+            tools:src="@drawable/ic_menu"
+            app:tint="#C32C52"/>
 
-        <TextView
-            android:id="@+id/tvProductName"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:textColor="#333333"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/ivEdit"
-            app:layout_constraintStart_toEndOf="@+id/tvProductImage"
-            app:layout_constraintTop_toTopOf="@+id/tvProductImage"
-            tools:text="Torta de Chocolate Fusión" />
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvProductDetails"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="#4A4A4A"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/ivEdit"
-            app:layout_constraintStart_toStartOf="@+id/tvProductName"
-            app:layout_constraintTop_toBottomOf="@+id/tvProductName"
-            tools:text="Stock: 15 | Precio: $12.500" />
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Torta de Chocolate Fusión" />
+
+            <TextView
+                android:id="@+id/tvProductDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="#666666"
+                android:textSize="14sp"
+                tools:text="Stock: 15 | Precio: $12.500" />
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/ivEdit"
+            android:id="@+id/ivEditCheck"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:clickable="true"
-            android:contentDescription="@string/btn_edit_product"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="Acción de Edición"
             android:src="@drawable/ic_check_small"
             app:tint="#C32C52"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:onClick="onEditProductClicked"
-            tools:ignore="UsingOnClickInXml" />
+            android:alpha="0.8"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

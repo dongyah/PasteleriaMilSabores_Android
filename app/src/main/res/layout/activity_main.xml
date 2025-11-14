@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F7F7"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <!-- Contenedor central (Simula la tarjeta de la app) -->
     <androidx.constraintlayout.widget.ConstraintLayout

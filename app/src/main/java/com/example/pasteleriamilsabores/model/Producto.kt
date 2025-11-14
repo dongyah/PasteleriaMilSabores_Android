@@ -1,4 +1,4 @@
-package com.example.pasteleriamilsabores
+package com.example.pasteleriamilsabores.model
 
 import com.squareup.moshi.JsonClass
 

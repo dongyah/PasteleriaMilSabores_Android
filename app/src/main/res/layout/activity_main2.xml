@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F7F7F7" tools:context=".MainActivity2">
+    android:background="#F7F7F7" tools:context=".ui.MainActivity2">
 
     <LinearLayout
         android:id="@+id/headerLayout"

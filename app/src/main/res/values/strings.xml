@@ -41,4 +41,7 @@
     <string name="btn_generate_description">Generar Descripción con IA</string>
 
     <string name="btn_save_and_pay">Guardar Producto y Simular Pago (Con Flow)</string>
+
+    <string name="product_icon_description">Ícono del Producto</string>
+    <string name="edit_action_description">Acción de Edición</string>
 </resources>
