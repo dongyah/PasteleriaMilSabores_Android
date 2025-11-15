@@ -8,48 +8,48 @@ import com.example.pasteleriamilsabores.model.Producto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Objeto singleton para manejar la lógica de datos y la llamada a la API
+/**
+ * Repositorio central que maneja todas las operaciones de red (API).
+ * Utiliza Corrutinas para mover las llamadas lentas a un hilo de fondo (Dispatchers.IO).
+ */
 object ProductosApiRepository {
 
-    // Inicializa el servicio de la API de forma perezosa (lazy)
+    // Inicializa el servicio Retrofit
     private val apiService: PasteleriaApiService = RetrofitClient.apiService
 
     // =======================================================
-    // 1. OBTENER PRODUCTOS
+    // 1. LEER (READ)
     // =======================================================
-    /**
-     * Llama a la API para obtener la lista de productos.
-     * Envuelve la llamada en Result para manejar errores de red/servidor.
-     */
+
+    // Obtiene la lista de todos los productos (Catálogo)
     suspend fun getProductos(): Result<List<Producto>> =
-        withContext(Dispatchers.IO) { // Ejecuta en un hilo de fondo
-            runCatching { // Captura cualquier excepción (ej. IOException)
+        withContext(Dispatchers.IO) {
+            runCatching {
                 apiService.getProductos()
             }
         }
 
-    // =======================================================
-    // 2. OBTENER CATEGORÍAS
-    // =======================================================
-    /**
-     * Llama a la API para obtener la lista de categorías.
-     * Envuelve la llamada en Result para manejar errores.
-     */
+    // Obtiene la lista de categorías (Spinner)
     suspend fun getCategorias(): Result<List<Categoria>> =
-        withContext(Dispatchers.IO) { // Ejecuta en un hilo de fondo
-            runCatching { // Captura cualquier excepción
+        withContext(Dispatchers.IO) {
+            runCatching {
                 apiService.getCategorias()
+            }
+        }
+
+    // Obtiene un solo producto por ID (para Edición)
+    suspend fun getProductoById(id: Int): Result<Producto> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                apiService.getProductoById(id)
             }
         }
 
 
     // =======================================================
-    // 3. GUARDAR PRODUCTO (POST)
+    // 2. CREAR (CREATE)
     // =======================================================
-    /**
-     * Envía los datos de un nuevo producto a la API.
-     * Envuelve la llamada en Result para manejar errores.
-     */
+    // Inserta un producto nuevo en la BD
     suspend fun postProducto(
         codigo: String,
         nombre: String,
@@ -60,18 +60,47 @@ object ProductosApiRepository {
         imagenUrl: String,
         categoriaId: Int
     ): Result<RespuestaApi> =
-        withContext(Dispatchers.IO) { // Ejecuta en un hilo de fondo
-            runCatching { // Captura cualquier excepción
+        withContext(Dispatchers.IO) {
+            runCatching {
                 apiService.postProducto(
-                    codigo,
-                    nombre,
-                    descripcion,
-                    precio,
-                    stock,
-                    stockCritico,
-                    imagenUrl,
-                    categoriaId
+                    codigo, nombre, descripcion, precio, stock, stockCritico, imagenUrl, categoriaId
                 )
+            }
+        }
+
+
+    // =======================================================
+    // 3. ACTUALIZAR (UPDATE)
+    // =======================================================
+    // Modifica un producto existente, requiere el 'id'.
+    suspend fun updateProducto(
+        id: Int, // El ID es clave para la actualización
+        codigo: String,
+        nombre: String,
+        descripcion: String,
+        precio: Int,
+        stock: Int,
+        stockCritico: Int,
+        imagenUrl: String,
+        categoriaId: Int
+    ): Result<RespuestaApi> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                apiService.updateProducto(
+                    id, codigo, nombre, descripcion, precio, stock, stockCritico, imagenUrl, categoriaId
+                )
+            }
+        }
+
+
+    // =======================================================
+    // 4. ELIMINAR (DELETE)
+    // =======================================================
+    // Elimina un producto por su ID.
+    suspend fun deleteProducto(id: Int): Result<RespuestaApi> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                apiService.deleteProducto(id)
             }
         }
 }

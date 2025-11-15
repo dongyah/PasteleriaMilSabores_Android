@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">PasteleriaMilSabores</string>
-    <string name="app_version_footer">Versión 1.0 - Desarrollado por [Tu Nombre] y [Nombre de tu Pareja]</string>
+    <string name="app_version_footer">Versión 1.0 - Desarrollado por Belén Toloza y Fernanda Riveros</string>
 
     <string name="app_title">Mil Sabores Admin</string>
     <string name="login_subtitle">Acceso de Administración</string>

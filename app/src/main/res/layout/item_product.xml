@@ -23,10 +23,10 @@
             android:layout_height="60dp"
             android:scaleType="centerCrop"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/ic_check_small"
-            android:contentDescription="Ícono del Producto"
-            tools:src="@drawable/ic_menu"
-            app:tint="#C32C52"/>
+            android:background="@drawable/rounded_image_background"
+            android:contentDescription="@string/product_icon_description"
+            app:tint="#C32C52"
+            tools:src="@drawable/ic_menu" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -54,15 +54,38 @@
                 tools:text="Stock: 15 | Precio: $12.500" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/ivEditCheck"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp"
             android:layout_gravity="center_vertical"
-            android:contentDescription="Acción de Edición"
-            android:src="@drawable/ic_check_small"
-            app:tint="#C32C52"
-            android:alpha="0.8"/>
+            android:gravity="center">
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Editar Producto"
+                app:tint="#4F46E5"
+                android:padding="4dp"
+                android:scaleType="fitCenter"/>
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Eliminar Producto"
+                app:tint="#C32C52"
+                android:padding="4dp"
+                android:scaleType="fitCenter"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
