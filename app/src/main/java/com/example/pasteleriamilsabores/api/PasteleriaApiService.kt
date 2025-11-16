@@ -19,7 +19,7 @@ interface PasteleriaApiService {
     @GET("obtener_categoria.php")
     suspend fun getCategorias(): List<Categoria>
 
-    // 3. LEER POR ID (Edición) ⭐️ NUEVO ⭐️
+    // 3. LEER POR ID (EDITAR)
     @GET("obtener_producto_por_id.php")
     suspend fun getProductoById(@Query("id") id: Int): Producto
 

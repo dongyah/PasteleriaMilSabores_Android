@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">PasteleriaMilSabores</string>
     <string name="app_version_footer">Versión 1.0 - Desarrollado por Belén Toloza y Fernanda Riveros</string>
-
     <string name="app_title">Mil Sabores Admin</string>
     <string name="login_subtitle">Acceso de Administración</string>
     <string name="hint_username">Usuario (admin)</string>
@@ -15,33 +14,36 @@
     <string name="btn_logout">Cerrar Sesión</string>
     <string name="btn_add_product">Agregar Nuevo Producto</string>
 
-    <string name="product_image_desc">Imagen del Producto de Pastelería</string>
-    <string name="btn_edit_product">Editar Producto</string>
-    <string name="btn_delete_product">Eliminar Producto</string>
+    <string name="product_icon_description">Ícono del Producto</string>
+    <string name="edit_action_description">Acción de Edición</string>
+    <string name="btn_edit_product_icon">Editar</string>
+    <string name="btn_delete_product_icon">Eliminar</string>
 
     <string name="btn_back">Volver al Dashboard</string>
     <string name="new_product_title">Cargar Nuevo Producto</string>
     <string name="edit_product_title">Editar Producto</string>
 
-    <string name="label_photo_ai">Foto del Producto (Edición con IA)</string>
-    <string name="image_placeholder_desc">Toca para cargar foto</string>
+    <string name="label_photo_ai">Foto del Producto (Nombre de Archivo/Base64)</string>
+    <string name="image_placeholder_desc">Toca para seleccionar o tomar una foto</string>
     <string name="btn_ia_fondo_blanco">Fondo Blanco (IA)</string>
 
     <string name="label_name">Nombre del Producto *</string>
     <string name="hint_product_name">Ej: Torta de Selva Negra</string>
 
-    <string name="label_price">Precio ($)</string>
+    <string name="label_price">Precio ($) *</string>
     <string name="hint_price">Ej: 9900</string>
 
-    <string name="label_stock">Stock</string>
+    <string name="label_stock">Stock *</string>
     <string name="hint_stock">Ej: 15</string>
 
+    <string name="label_critical_stock">Stock Crítico (Mínimo) *</string>
+    <string name="hint_critical_stock">Ej: 5</string>
+
+    <string name="label_category">Seleccionar Categoría *</string>
+
     <string name="label_description">Descripción</string>
-    <string name="hint_description">Describe brevemente el producto o genera con IA...</string>
+    <string name="hint_description">Describe brevemente el producto</string>
     <string name="btn_generate_description">Generar Descripción con IA</string>
 
-    <string name="btn_save_and_pay">Guardar Producto y Simular Pago (Con Flow)</string>
-
-    <string name="product_icon_description">Ícono del Producto</string>
-    <string name="edit_action_description">Acción de Edición</string>
+    <string name="btn_save_product_final">GUARDAR PRODUCTO</string>
 </resources>

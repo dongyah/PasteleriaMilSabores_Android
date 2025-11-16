@@ -1,17 +1,29 @@
 package com.example.pasteleriamilsabores.ui
 
+import android.Manifest
 import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.pasteleriamilsabores.R
 import com.example.pasteleriamilsabores.model.Categoria
 import com.example.pasteleriamilsabores.model.Producto
 import com.example.pasteleriamilsabores.repository.ProductosApiRepository
 import kotlinx.coroutines.launch
+import androidx.exifinterface.media.ExifInterface //  Necesario para la rotación EXIF
+import android.graphics.Matrix // Necesario para aplicar la rotación
+import java.io.ByteArrayInputStream // Necesario para leer EXIF desde bytes
 
 class MainActivity3 : AppCompatActivity() {
 
@@ -27,19 +39,55 @@ class MainActivity3 : AppCompatActivity() {
     private lateinit var btnSaveProduct: Button
     private lateinit var ivProductPreview: ImageView
     private lateinit var flImagePicker: FrameLayout
+    private lateinit var tvImagePlaceholder: TextView
 
     private var listaCategorias: List<Categoria> = emptyList()
-    private var base64Image: String? = null
+    private var base64Image: String? = null // Cadena Base64 para enviar a la API
 
-    // ⭐️ Variable clave para manejar el modo (0 = Crear, > 0 = Edición)
+    // Variables de modo y edición
     private var productoIdParaEdicion: Int = 0
     private var productoCargado: Producto? = null
+    private val CAMERA_REQUEST_CODE = 102
+
+
+    // =======================================================
+    // 1. LAUNCHER DE RESULTADOS (Cámara)
+    // =======================================================
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val base64 = result.data?.getStringExtra("IMAGE_BASE64")
+            if (base64 != null) {
+                base64Image = base64 // Asigna la cadena Base64
+
+                // VISUALIZACIÓN: Decodifica, limpia y rota el Bitmap
+                val bitmap = decodeBase64ToBitmap(base64)
+                if (bitmap != null) {
+                    ivProductPreview.setImageBitmap(bitmap)
+                    ivProductPreview.visibility = View.VISIBLE
+
+                    // Oculta el placeholder y el campo de URL/texto
+                    etImageUrl.visibility = View.GONE
+                    tvImagePlaceholder.visibility = View.GONE
+                }
+
+                Toast.makeText(this, "Foto cargada y codificada.", Toast.LENGTH_SHORT).show()
+
+            } else {
+                Toast.makeText(this, "Error: No se recibió la imagen.", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Captura cancelada.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main3)
 
-        // 1. Inicialización de Vistas
+        // 2. Inicialización de Vistas
         etProductCode = findViewById(R.id.etProductCode)
         etProductName = findViewById(R.id.etProductName)
         etProductDescription = findViewById(R.id.etProductDescription)
@@ -51,24 +99,22 @@ class MainActivity3 : AppCompatActivity() {
         btnSaveProduct = findViewById(R.id.btnSaveProduct)
         ivProductPreview = findViewById(R.id.ivProductPreview)
         flImagePicker = findViewById(R.id.flImagePicker)
+        tvImagePlaceholder = findViewById(R.id.tvImagePlaceholder)
 
-        // 2. DETECCIÓN DE MODO EDICIÓN/CREACIÓN
+        // 3. Detección de Modo Edición/Creación
         productoIdParaEdicion = intent.getIntExtra("PRODUCT_ID", 0)
-
         val formTitle = findViewById<TextView>(R.id.tvFormTitle)
 
         if (productoIdParaEdicion != 0) {
-            // Modo Edición: Cargar datos y ajustar la UI
             formTitle.text = "Editar Producto"
             btnSaveProduct.text = "ACTUALIZAR PRODUCTO"
             cargarDatosDeEdicion(productoIdParaEdicion)
         } else {
-            // Modo Creación
             formTitle.text = "Crear Nuevo Producto"
             btnSaveProduct.text = "GUARDAR PRODUCTO"
         }
 
-        // 3. Listeners
+        // 4. Listeners
         cargarCategorias()
         btnSaveProduct.setOnClickListener {
             guardarOActualizarProducto()
@@ -76,27 +122,98 @@ class MainActivity3 : AppCompatActivity() {
     }
 
     // =======================================================
-    // MÉTODOS ONCLICK DEL XML
+    // 5. UTILIDAD DE IMAGEN: DECODIFICACIÓN Y ROTACIÓN EXIF
     // =======================================================
 
     /**
-     * Maneja el clic en la flecha de volver atrás.
+     * Convierte una cadena Base64 a un objeto Bitmap, limpiando la cadena
+     * y aplicando la corrección de rotación EXIF (solución a la imagen de lado).
      */
-    fun onBackClicked(view: View) {
-        setResult(Activity.RESULT_CANCELED)
-        finish()
+    private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
+        try {
+            // 1. Limpieza de Base64
+            val cleanedBase64Str = base64Str.replace("\n", "").replace("\r", "").replace(" ", "")
+            if (cleanedBase64Str.isEmpty()) return null
+
+            // 2. Obtener los bytes de la imagen
+            val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
+
+            // 3. Decodificar el Bitmap original
+            val originalBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+            // 4. Leer la orientación EXIF de los bytes para aplicar la rotación
+            val inputStream = ByteArrayInputStream(decodedBytes)
+            val exif = ExifInterface(inputStream)
+            val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+            // 5. Calcular el ángulo de rotación
+            val matrix = Matrix()
+            val rotationAngle = when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                else -> 0f
+            }
+
+            // 6. Aplicar la rotación
+            matrix.postRotate(rotationAngle)
+
+            // 7. Crear y devolver el Bitmap corregido
+            return Bitmap.createBitmap(
+                originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true
+            )
+
+        } catch (e: Exception) {
+            // Si falla la rotación (porque no hay metadata EXIF), devuelve un Bitmap simple
+            try {
+                val cleanedBase64Str = base64Str.replace("\n", "").replace("\r", "").replace(" ", "")
+                val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
+                return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            } catch (e2: Exception) {
+                Log.e("BASE64_DECODE_FAIL", "Fallo total al decodificar: ${e.message}")
+                return null
+            }
+        }
     }
 
     /**
-     * Maneja el clic en el FrameLayout para la selección de foto.
+     * Lanza la actividad de la cámara/galería.
      */
     fun onImagePickerClicked(view: View) {
-        Toast.makeText(this, "Iniciando selección de foto (Lógica de cámara/galería).", Toast.LENGTH_LONG).show()
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            val intent = Intent(this, CameraActivity::class.java)
+            cameraLauncher.launch(intent)
+
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_REQUEST_CODE && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
+            val intent = Intent(this, CameraActivity::class.java)
+            cameraLauncher.launch(intent)
+        } else {
+            Toast.makeText(this, "Permiso de cámara denegado.", Toast.LENGTH_LONG).show()
+        }
     }
 
 
     // =======================================================
-    // LÓGICA DE CARGA DE DATOS Y CATEGORÍAS (GET)
+    // 6. LÓGICA DE CARGA DE DATOS (CRUD)
     // =======================================================
 
     private fun cargarCategorias() {
@@ -114,11 +231,9 @@ class MainActivity3 : AppCompatActivity() {
                 )
                 spinnerCategory.adapter = adapter
 
-                // Si ya estamos editando y el producto se cargó antes, seleccionamos la opción.
                 if (productoIdParaEdicion != 0 && productoCargado != null) {
                     seleccionarCategoriaEnSpinner(productoCargado!!.categoria_id)
                 }
-
             }.onFailure { exception ->
                 Toast.makeText(this@MainActivity3, "Error al cargar categorías.", Toast.LENGTH_LONG).show()
             }
@@ -141,14 +256,24 @@ class MainActivity3 : AppCompatActivity() {
                 etCriticalStock.setText(producto.stock_critico.toString())
                 etImageUrl.setText(producto.imagen_url)
 
-                // Seleccionar la categoría después de que la lista de categorías se haya cargado (si ya lo hizo)
+                //  Cargar y mostrar la imagen Base64 (con rotación y limpieza)
+                if (!producto.imagen_url.isNullOrEmpty()) {
+                    val bitmap = decodeBase64ToBitmap(producto.imagen_url)
+                    if (bitmap != null) {
+                        ivProductPreview.setImageBitmap(bitmap)
+                        ivProductPreview.visibility = View.VISIBLE
+                        tvImagePlaceholder.visibility = View.GONE
+                        etImageUrl.visibility = View.GONE
+                        base64Image = producto.imagen_url // Mantener el Base64 cargado para actualizar
+                    }
+                }
+
                 if (listaCategorias.isNotEmpty()) {
                     seleccionarCategoriaEnSpinner(producto.categoria_id)
                 }
 
             }.onFailure { exception ->
                 Toast.makeText(this@MainActivity3, "Error al cargar producto para edición.", Toast.LENGTH_LONG).show()
-                // Si falla la carga, volvemos a modo Creación
                 productoIdParaEdicion = 0
                 btnSaveProduct.text = "GUARDAR PRODUCTO"
             }
@@ -166,7 +291,7 @@ class MainActivity3 : AppCompatActivity() {
 
 
     // =======================================================
-    // FUNCIÓN DE GUARDADO O ACTUALIZACIÓN (POST / PUT)
+    // 7. FUNCIÓN DE GUARDADO O ACTUALIZACIÓN (POST / PUT)
     // =======================================================
     private fun guardarOActualizarProducto() {
 
@@ -185,10 +310,11 @@ class MainActivity3 : AppCompatActivity() {
             1
         }
 
-        val imagenData = base64Image ?: etImageUrl.text.toString()
+        // Prioriza la cadena Base64; si no, usa el texto del EditText
+        val imagenUrlParaApi = base64Image ?: etImageUrl.text.toString()
 
         // 2. Validación
-        if (nombre.isEmpty() || precio <= 0 || stock <= 0 || codigo.isEmpty() || imagenData.isEmpty()) {
+        if (nombre.isEmpty() || precio <= 0 || stock <= 0 || codigo.isEmpty() || imagenUrlParaApi.isEmpty()) {
             Toast.makeText(this, "Complete todos los campos obligatorios.", Toast.LENGTH_LONG).show()
             return
         }
@@ -201,13 +327,13 @@ class MainActivity3 : AppCompatActivity() {
                 ProductosApiRepository.updateProducto(
                     id = productoIdParaEdicion,
                     codigo = codigo, nombre = nombre, descripcion = descripcion, precio = precio,
-                    stock = stock, stockCritico = stockCritico, imagenUrl = imagenData, categoriaId = categoriaId
+                    stock = stock, stockCritico = stockCritico, imagenUrl = imagenUrlParaApi, categoriaId = categoriaId
                 )
             } else {
                 // MODO CREACIÓN: Llama a POST
                 ProductosApiRepository.postProducto(
                     codigo = codigo, nombre = nombre, descripcion = descripcion, precio = precio,
-                    stock = stock, stockCritico = stockCritico, imagenUrl = imagenData, categoriaId = categoriaId
+                    stock = stock, stockCritico = stockCritico, imagenUrl = imagenUrlParaApi, categoriaId = categoriaId
                 )
             }
 
@@ -215,7 +341,7 @@ class MainActivity3 : AppCompatActivity() {
             resultado.onSuccess { respuesta ->
                 if (respuesta.status == "success") {
                     Toast.makeText(this@MainActivity3, "ÉXITO: ${respuesta.message}", Toast.LENGTH_LONG).show()
-                    setResult(Activity.RESULT_OK) // Indica que el listado debe refrescar
+                    setResult(Activity.RESULT_OK)
                     finish()
                 } else {
                     Toast.makeText(this@MainActivity3, "ERROR BD: ${respuesta.message}", Toast.LENGTH_LONG).show()
@@ -228,5 +354,10 @@ class MainActivity3 : AppCompatActivity() {
                 finish()
             }
         }
+    }
+
+    fun onBackClicked(view: View) {
+        setResult(Activity.RESULT_CANCELED)
+        finish()
     }
 }
