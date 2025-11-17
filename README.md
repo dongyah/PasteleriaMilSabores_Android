@@ -1,196 +1,89 @@
-🍰 Pastelería Mil Sabores: Aplicación de Gestión Móvil
+¡Claro\! Un archivo **README.md** detallado es esencial para tu proyecto final. Demostrará la arquitectura robusta y la implementación de técnicas avanzadas (Corrutinas, Retrofit, Gemini AI) que has dominado.
 
-Este proyecto es una aplicación de gestión de inventario para una pastelería, desarrollada en Kotlin para Android. Implementa un sistema CRUD completo (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura moderna basada en Corrutinas y Retrofit para comunicarse con un Backend simulado (XAMPP/PHP).
+Aquí tienes el contenido completo, estructurado para GitHub, con todos los detalles de tu proyecto **Pastelería Mil Sabores**.
 
-Además, integra funcionalidades avanzadas de Cámara y Galería (con codificación Base64) y simula el uso de Inteligencia Artificial (Gemini AI) para generar contenido.
+-----
 
-🚀 1. Arquitectura y Tecnologías Clave
+# 🍰 Proyecto Final: Pastelería Mil Sabores - App de Gestión
 
-El proyecto está diseñado siguiendo una arquitectura de capas, donde la lógica de la Interfaz de Usuario (UI) está completamente separada de la lógica de datos y red.
+Este proyecto es una aplicación móvil de gestión de inventario y catálogo, desarrollada en **Kotlin** para Android. Implementa el **CRUD completo** (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura limpia basada en **Corrutinas** y **Retrofit** para comunicarse con un servidor PHP/MySQL. Además, incluye la integración de **Inteligencia Artificial (IA) de Gemini** para enriquecer el contenido de los productos.
 
-Componente
+## 1\. ⚙️ Arquitectura y Tecnologías Clave
 
-Tecnología
+La aplicación sigue el patrón de **Capa de Repositorio** (Repository Pattern) para separar la UI de la lógica de datos, utilizando técnicas de programación asíncrona avanzada.
 
-Propósito
+| Componente | Tecnología | Propósito |
+| :--- | :--- | :--- |
+| **Asincronía & Hilos** | **Corrutinas** (`lifecycleScope`, `Dispatchers.IO`) | Ejecución de tareas lentas (API, Base de Datos) sin bloquear el hilo principal (UI). |
+| **Comunicación API** | **Retrofit 2** / **Moshi** | Cliente HTTP robusto para convertir las llamadas de Kotlin en solicitudes POST/GET a los scripts PHP. |
+| **Backend** | **XAMPP (PHP & MySQL)** | Servidor local para alojar los *scripts* de la API y la base de datos `pasteleria_mil_sabores`. |
+| **IA Generativa** | **Gemini (Vía PHP cURL)** | Generación de descripciones de productos y análisis simulado de imágenes. |
+| **Imagen** | **CameraX** / **Base64** | Captura de fotos y codificación a formato de texto para envío y almacenamiento en la base de datos (`LONGTEXT`). |
 
-Frontend (App)
+## 2\. 🗂️ Estructura de Archivos y Responsabilidades (Kotlin)
 
-Kotlin / Android Studio
+El proyecto está organizado en paquetes siguiendo una arquitectura modular:
 
-UI y manejo del flujo de la aplicación.
+| Paquete | Archivos Principales | Responsabilidad |
+| :--- | :--- | :--- |
+| `ui` | `MainActivity2.kt` (Catálogo), `MainActivity3.kt` (Formulario), `CameraActivity.kt` | **Capa de Presentación:** Muestra la información y maneja eventos de usuario. `MainActivity3` contiene la lógica de Permisos y Launchers. |
+| `repository` | `ProductosApiRepository.kt` | **Capa de Lógica de Datos:** Contiene la lógica `suspend fun` para las Corrutinas. Decide si llamar a una función CRUD o a una función de IA. |
+| `api` | `PasteleriaApiService.kt`, `RetrofitClient.kt` | **Capa de Red:** Define el contrato de la API (`@GET`, `@POST`) y la configuración base de Retrofit. |
+| `model` | `Producto.kt`, `Categoria.kt`, `Respuesta.kt` | **Modelos de Datos:** Clases `data class` para el parseo JSON (Moshi). |
+| `adapter` | `ProductAdapter.kt` | **Visualización:** Maneja el `RecyclerView`. Contiene la lógica de **decodificación y rotación EXIF de la imagen Base64** para mostrar la foto. |
+| `PCamara` | `CameraManager.kt`, `CamaraUtils.kt` | Lógica del profesor para controlar CameraX y codificar el `Bitmap` a Base64. |
 
-Backend (Servidor)
+-----
 
-XAMPP (Apache, MySQL: Puerto 3307)
+## 3\. 🖥️ Layouts y Funcionalidad del CRUD
 
-Base de datos y alojamiento de Web Services (PHP).
+| Layout (XML) | Uso en la Aplicación | Detalle de la Función |
+| :--- | :--- | :--- |
+| `activity_main2.xml` | **Catálogo/Gestión** | Muestra el listado con `RecyclerView`. Usa **`registerForActivityResult`** en Kotlin para esperar un resultado de `MainActivity3` y recargar la lista automáticamente. |
+| `item_product.xml` | **Ítem del Catálogo** | Muestra la **Imagen Base64** decodificada, nombre, precio y stock. Contiene los botones de **Edición** y **Eliminación** que delegan las acciones a `MainActivity2`. |
+| `activity_main3.xml` | **Formulario** | Contiene todos los `TextInputEditText` con *hints* de ejemplo y el `Spinner` de Categoría. Incluye botones dedicados para las funciones de IA. |
+| `activity_camera.xml` | **Cámara/Galería** | Vista del visor de la cámara. Almacena `PreviewView` y botones para **Tomar Foto** o **Galería**. |
 
-Comunicación API
+-----
 
-Retrofit 2 / Moshi
+## 4\. 🔗 Configuración del Servidor y Base de Datos
 
-Cliente HTTP robusto para la comunicación REST.
+| Componente | Archivo(s) | Función Esencial |
+| :--- | :--- | :--- |
+| **Configuración XAMPP** | `my.ini` (Config), `php.ini` (Config) | **Ajustado el puerto MySQL a `3307`** para evitar el error de "shutdown unexpectedly". Límites de `post_max_size` aumentados a **50M** para aceptar la cadena Base64 de la imagen. |
+| **Base de Datos** | `pasteleria_mil_sabores` (SQL Script) | Creada con las tablas `Productos` y `Categorias`. La columna `imagen_url` está configurada como **`LONGTEXT`** para almacenar el Base64. |
+| **Conexión PHP** | Todos los 6 scripts | Todos los scripts usan la conexión **`new mysqli($host, $user, $pass, $db, 3307)`** para asegurar la comunicación con el puerto no estándar. |
 
-Asincronía
+### Scripts PHP para la API:
 
-Corrutinas (lifecycleScope, Dispatchers.IO)
+| Endpoint (Vía Kotlin) | Script PHP | Tarea en el Servidor |
+| :--- | :--- | :--- |
+| `getProductos()` | `obtener_producto.php` | SELECT \* FROM productos (Devuelve JSON Array). |
+| `postProducto()` | `guardar_producto.php` | **INSERT INTO** productos. Contiene lógica para **limpiar** la cadena Base64. |
+| `updateProducto()` | `actualizar_producto.php` | **UPDATE** producto WHERE id = $id. |
+| `deleteProducto()` | `eliminar_producto.php` | **DELETE** FROM productos WHERE id = $id. |
+| `generarDescripcion()` | `generar_ia.php` | **Llamada cURL a Gemini Pro** para generar texto. |
 
-Gestión eficiente de todas las operaciones lentas (red y lectura de Base64).
+-----
 
-Cámara/Imagen
+## 5\. ⭐️ Funcionalidad de Inteligencia Artificial
 
-CameraX / Base64 / EXIF
+Para cumplir con el requisito de IA de forma segura (evitando el error de dependencia en Kotlin), la lógica de Gemini se ejecuta en el *backend* de PHP.
 
-Captura de fotos y envío de la imagen binaria como cadena de texto.
+| Función en Kotlin | Modelo Gemini | Proceso de Ejecución |
+| :--- | :--- | :--- |
+| `generarDescripcionIA()` | `gemini-pro` | Kotlin envía el nombre del producto $\rightarrow$ PHP llama a la API REST de Gemini $\rightarrow$ PHP devuelve la descripción generada a Kotlin para rellenar el `EditText`. |
+| `mejorarImagenIA()` | `gemini-pro-vision` | Kotlin envía la Base64 $\rightarrow$ PHP simula el análisis de la imagen $\rightarrow$ PHP devuelve el resultado del análisis (en formato texto) al formulario. |
 
-IA
+### Dependencias Clave de Terceros
 
-Gemini (Vía PHP cURL)
+```kotlin
+// Build.gradle.kts (Module :app)
 
-Generación de descripciones y análisis de imágenes.
-
-2. ⚙️ Configuración del Entorno y Dependencias
-
-Para compilar y ejecutar el proyecto, se requiere:
-
-2.1 Dependencias Clave (build.gradle.kts)
-
-El proyecto utiliza las siguientes librerías externas:
-
-dependencies {
-    // Corrutinas y Ciclo de Vida
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
-    
-    // Retrofit y JSON (Moshi)
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
-    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.1") 
-    
-    // Conexión y Logging
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    
-    // Cámara (CameraX) y Manejo de Imagen
-    implementation("androidx.camera:camera-core:1.3.4")
-    implementation("androidx.camera:camera-lifecycle:1.3.4")
-    implementation("androidx.camera:camera-view:1.3.4")
-    implementation("androidx.exifinterface:exifinterface:1.3.6") // Para rotación EXIF
-    
-    // Inteligencia Artificial (Google AI SDK) - Requerido para modelos
-    implementation("com.google.ai.client.generativeai:generativeai:0.1.0")
-}
-
-
-2.2 Configuración del Backend (XAMPP)
-
-Directorio: Todos los scripts PHP deben estar en C:\xampp\htdocs\pasteleria.
-
-MySQL Puerto: MySQL debe iniciarse en el puerto 3307 (my.ini modificado).
-
-Archivos de Datos: La base de datos pasteleria_mil_sabores debe existir y estar poblada.
-
-PHP Configuración (php.ini): Se debe aumentar el límite de datos para aceptar la cadena Base64:
-
-post_max_size = 50M
-upload_max_filesize = 50M
-
-
-Conexión PHP: Todos los scripts PHP (mysqli) deben especificar el puerto:
-
-$port = 3306;
-$conexion = new mysqli($host, $user, $pass, $db, $port);
-
-
-3. 📂 Archivos y Componentes Clave (Kotlin)
-
-El proyecto se divide en las siguientes carpetas y archivos, siguiendo el patrón enseñado:
-
-a) Capa de Modelo (model/)
-
-Archivo
-
-Propósito
-
-Producto.kt
-
-data class principal (ID: Int, Precio: Int, Stock: Int, Imagen_url: String/Base64).
-
-Categoria.kt
-
-data class utilizada para cargar el Spinner.
-
-b) Capa de Red (api/)
-
-Archivo
-
-Propósito
-
-RetrofitClient.kt
-
-Configuración del cliente HTTP y OkHttpClient con timeouts extendidos para la IA.
-
-PasteleriaApiService.kt
-
-Contrato de API. Define las 6 operaciones de la BD (@GET, @POST, @PUT, @DELETE) y las 2 llamadas a la IA (vía PHP).
-
-c) Capa de Repositorio (repository/)
-
-Archivo
-
-Propósito
-
-ProductosApiRepository.kt
-
-Contiene el CRUD completo y las llamadas de IA. Implementa withContext(Dispatchers.IO) y Result<T> para el manejo asíncrono y seguro de los datos.
-
-d) Capa de Presentación (ui/)
-
-Archivo
-
-Propósito
-
-MainActivity2.kt
-
-Catálogo/Dashboard. Carga la lista con Corrutinas (GET) y usa registerForActivityResult para recargar la lista automáticamente después de una acción de guardado o eliminación. Implementa la interfaz de Edición/Eliminación.
-
-MainActivity3.kt
-
-Formulario de CRUD. Maneja la lógica dual de Creación y Edición. Contiene la lógica de permisos, el cameraLauncher, y las funciones de IA y rotación EXIF.
-
-CameraActivity.kt
-
-Actividad que aloja el feed de CameraX, toma la foto, la codifica a Base64 y devuelve el resultado a MainActivity3.
-
-e) Adaptador y Utilidades
-
-Archivo
-
-Propósito
-
-ProductAdapter.kt
-
-Adaptador del RecyclerView. Contiene la lógica para decodificar el Base64 a un Bitmap (con corrección de rotación) y manejar los clics de Edición/Eliminación delegándolos a MainActivity2.
-
-PCamara/CameraManager.kt
-
-Lógica de CameraX para iniciar la vista previa y capturar la imagen.
-
-PCamara/CamaraUtils.kt
-
-Lógica para la conversión final de Bitmap $\rightarrow$ Base64 para envío a la API.
-
-4. 🌐 Flujo de Datos y Lógica (IA y Foto)
-
-4.1 Captura de Imagen (Base64)
-
-MainActivity3.onImagePickerClicked lanza CameraActivity usando un Launcher.
-
-CameraActivity toma la foto, la rota (corrigiendo el problema de la imagen de lado), y usa CamaraUtils.convertirDeBitMapABase64 para crear una cadena de texto.
-
-La cadena Base64 se devuelve al cameraLauncher de MainActivity3 y se guarda en la variable base64Image.
-
-La función decodeBase64ToBitmap en MainActivity3 decodifica esa cadena para mostrar la vista previa.
-
-Al presionar Guardar, base64Image se envía en el campo imagen_url al script PHP.
+implementation("com.squareup.retrofit2:retrofit:2.11.0")
+implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+implementation("com.google.ai.client.generativeai:generativeai:0.1.0") // SDK de Gemini
+implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+implementation("androidx.camera:camera-lifecycle:1.3.4")
+implementation("androidx.exifinterface:exifinterface:1.3.6") // Para rotación de imagen
+```
