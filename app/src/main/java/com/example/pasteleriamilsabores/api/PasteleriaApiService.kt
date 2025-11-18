@@ -11,19 +11,19 @@ data class RespuestaApi(
 
 interface PasteleriaApiService {
 
-    // 1. LEER TODO (Catálogo)
+    // LEER TODO (Catálogo)
     @GET("obtener_producto.php")
     suspend fun getProductos(): List<Producto>
 
-    // 2. LEER CATEGORÍAS (Spinner)
+    // LEER CATEGORÍAS (Spinner)
     @GET("obtener_categoria.php")
     suspend fun getCategorias(): List<Categoria>
 
-    // 3. LEER POR ID (EDITAR)
+    // LEER POR ID (EDITAR)
     @GET("obtener_producto_por_id.php")
     suspend fun getProductoById(@Query("id") id: Int): Producto
 
-    // 4. CREAR (POST)
+    // CREAR (POST)
     @POST("guardar_producto.php")
     @FormUrlEncoded
     suspend fun postProducto(
@@ -37,7 +37,7 @@ interface PasteleriaApiService {
         @Field("categoria_id") categoriaId: Int
     ): RespuestaApi
 
-    // 5. ACTUALIZAR (PUT)
+    // ACTUALIZAR (PUT)
     @PUT("actualizar_producto.php")
     @FormUrlEncoded
     suspend fun updateProducto(
@@ -52,7 +52,7 @@ interface PasteleriaApiService {
         @Field("categoria_id") categoriaId: Int
     ): RespuestaApi
 
-    // 6. ELIMINAR (DELETE):  CON EL METODO @DELETE NOS DABA ERROR DE RED,
+    // ELIMINAR (DELETE):  CON EL METODO @DELETE NOS DABA ERROR DE RED,
     // @DELETE ESTÁ DISEÑADO PARA ELIMINAR UN RECURSO POR LA UTL EJEM /PRODUCTOS/123
     // CON @POST SE GARANTIZA QUE EL ID SE MANDE DE MANERA FIABLE EN EL CUERPO DE LA SOLICITUD Y EL PHP DE ELIMINAR
     // LO LEE CORRECTAMENTE USANDO parse_str(file_get_contents("php://input"), $DELETE)

@@ -35,7 +35,7 @@ class CameraActivity : AppCompatActivity() {
 
     private val CAMERA_PERMISSION_REQUEST_CODE = 101 // Código para la solicitud de permiso
 
-    // ⭐️ LAUNCHER para obtener contenido (Galería)
+    // LAUNCHER para obtener contenido (Galería)
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -88,27 +88,25 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    // =======================================================
-    // LÓGICA DE CÁMARA Y BASE64
-    // =======================================================
 
-    /**
-     * Toma la foto con CameraX, codifica y devuelve el resultado a MainActivity3.
-     */
+// LOGICA DE CAMARA Y BASE64
+
+    //Toma la foto con CameraX, codifica y devuelve el resultado a MainActivity3.
+
     private fun tomarFotoYDevolverResultado() {
         cameraManager?.takePhoto { bitmap ->
             if (bitmap != null) {
-                // 1. Muestra la foto capturada al usuario
+                // Muestra la foto capturada al usuario
                 previewView.visibility = View.GONE
                 contenedorFoto.visibility = View.VISIBLE
                 contenedorFoto.setImageBitmap(bitmap)
 
-                // 2. Codificar a Base64
+                // Codificar a Base64
                 val base64 = CamaraUtils.convertirDeBitMapABase64(bitmap)
 
-                // 3. Devolver resultado a MainActivity3
+                // Devolver resultado a MainActivity3
                 val resultIntent = Intent()
-                resultIntent.putExtra("IMAGE_BASE64", base64) // ⭐️ CLAVE: La cadena Base64
+                resultIntent.putExtra("IMAGE_BASE64", base64)
 
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()
@@ -121,12 +119,10 @@ class CameraActivity : AppCompatActivity() {
         } ?: Toast.makeText(this, "Cámara no lista", Toast.LENGTH_SHORT).show()
     }
 
-    /**
-     * Procesa la imagen seleccionada de la galería (URI) y la codifica a Base64.
-     */
+// PROCESA LA IMAGEN QUE ESCOGEMOS DE LA GALERIA Y LA CONVIERTE A BASE64
     private fun handleGalleryImageUri(uri: Uri) {
         try {
-            // 1. Lee la URI como un Bitmap (maneja compatibilidad de versiones)
+            // Lee la URI como un Bitmap (maneja compatibilidad de versiones)
             val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri))
             } else {
@@ -134,14 +130,14 @@ class CameraActivity : AppCompatActivity() {
                 MediaStore.Images.Media.getBitmap(contentResolver, uri)
             }
 
-            // 2. Muestra y convierte a Base64
+            // Muestra y convierte a Base64
             previewView.visibility = View.GONE
             contenedorFoto.visibility = View.VISIBLE
             contenedorFoto.setImageBitmap(bitmap)
 
             val base64 = CamaraUtils.convertirDeBitMapABase64(bitmap)
 
-            // 3. Devolver resultado a MainActivity3
+            // Devolver resultado a MainActivity3
             val resultIntent = Intent()
             resultIntent.putExtra("IMAGE_BASE64", base64)
             setResult(Activity.RESULT_OK, resultIntent)
@@ -156,19 +152,17 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
-    /**
-     * Inicializa el CameraManager y la vista previa.
-     */
+
+     //Inicializa el CameraManager y la vista previa.
+
     private fun setupCamera() {
         cameraManager = CameraManager(this)
         cameraManager?.startCamera(previewView)
         btnTomarFoto.isEnabled = true
     }
 
-    // =======================================================
-    // MANEJO DE PERMISOS
-    // =======================================================
 
+// MANEJO DE PERMISOS
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

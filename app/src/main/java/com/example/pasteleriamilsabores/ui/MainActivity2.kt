@@ -15,12 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pasteleriamilsabores.R
 import com.example.pasteleriamilsabores.adapter.ProductAdapter
-import com.example.pasteleriamilsabores.adapter.OnItemActionListener // Interfaz para manejar Edit/Delete
+import com.example.pasteleriamilsabores.adapter.OnItemActionListener
 import com.example.pasteleriamilsabores.model.Producto
 import com.example.pasteleriamilsabores.repository.ProductosApiRepository
 import kotlinx.coroutines.launch
 
-// ⭐️ MainActivity2 DEBE IMPLEMENTAR la interfaz OnItemActionListener del adaptador
 class MainActivity2 : AppCompatActivity(), OnItemActionListener {
 
     // Declaraciones de Vistas y Datos
@@ -29,9 +28,7 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
     private lateinit var tvProductsCount: TextView
     private lateinit var productAdapter: ProductAdapter // Variable para guardar el adaptador
 
-    // =======================================================
-    // 1. LAUNCHER DE RESULTADOS (Para refrescar después de MainActivity3)
-    // =======================================================
+//LAUNCHER DE RESULTADOS (Para refrescar después de MainActivity3)
     private val cargarProductoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -39,7 +36,7 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         if (result.resultCode == Activity.RESULT_OK) {
             Toast.makeText(this, "Operación exitosa. Recargando lista...", Toast.LENGTH_SHORT).show()
 
-            // ⭐️ Recarga los datos reales de la API
+            // ⭐Recarga los datos reales de la API
             cargarProductosDesdeApi()
         }
     }
@@ -64,12 +61,9 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         cargarProductosDesdeApi()
     }
 
-    // =======================================================
-    // 2. LÓGICA DE CARGA CON CORRUTINAS (GET)
-    // =======================================================
-    /**
-     * Usa Corrutinas para obtener la lista de productos de la API.
-     */
+
+     // implementamos Corrutinas para obtener la lista de productos de la API.
+
     private fun cargarProductosDesdeApi() {
         lifecycleScope.launch {
 
@@ -88,28 +82,19 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         }
     }
 
-    // =======================================================
-    // 3. ACTUALIZACIÓN DE LA INTERFAZ
-    // =======================================================
+    // actualizacion de la interfaz
     private fun actualizarUI(productos: List<Producto>) {
         // 1. Contador
         tvProductsCount.text = getString(R.string.products_loaded_count, productos.size)
 
         // 2. Notificar al adaptador que los datos han cambiado
-        (recyclerView.adapter as ProductAdapter).updateData(productos) // Asumiendo que ProductAdapter tiene updateData
+        (recyclerView.adapter as ProductAdapter).updateData(productos)
 
-        // Si no tienes updateData:
-        // recyclerView.adapter = ProductAdapter(productos, this)
     }
 
 
-    // =======================================================
-    // 4. MÉTODOS DE LA INTERFAZ OnItemActionListener (CRUD)
-    // =======================================================
+     //Edición: Se llama cuando el usuario hace clic en el ítem o botón de edición OnItemActionListener
 
-    /**
-     * Edición: Se llama cuando el usuario hace clic en el ítem (o botón de edición).
-     */
     override fun onEditClicked(productoId: Int) {
         val intent = Intent(this, MainActivity3::class.java).apply {
             // Pasamos el ID del producto seleccionado para la edición
@@ -119,9 +104,9 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         cargarProductoLauncher.launch(intent)
     }
 
-    /**
-     * Eliminación: Se llama cuando el usuario hace clic en el botón de eliminar.
-     */
+
+     //Eliminación: Se llama cuando el usuario hace clic en el botón de eliminar.
+
     override fun onDeleteClicked(productoId: Int) {
         // Mostrar diálogo de confirmación antes de la eliminación
         AlertDialog.Builder(this)
@@ -153,22 +138,17 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
     }
 
 
-    // =======================================================
-    // 5. MÉTODOS ONCLICK DEL XML
-    // =======================================================
+     //Maneja el clic en el botón '+' del XML (Crear Producto).
 
-    /**
-     * Maneja el clic en el botón '+' del XML (Crear Producto).
-     */
     public fun onAddProductClicked(view: View) {
         val intent = Intent(this, MainActivity3::class.java)
         // Usamos el Launcher para abrir la actividad y esperar el resultado
         cargarProductoLauncher.launch(intent)
     }
 
-    /**
-     * Maneja el clic en el botón de Logout (simulación).
-     */
+
+     //Maneja el clic en el botón de Logout (simulación).
+
     public fun onLogoutClicked(view: View) {
         Toast.makeText(this, "Cerrando sesión.", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, MainActivity::class.java)

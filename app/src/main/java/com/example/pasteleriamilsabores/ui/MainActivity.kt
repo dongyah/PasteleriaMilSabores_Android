@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
             if(enteredUser == ADMIN_USER && enteredPass == ADMIN_PASS){
 
-                // 2. AUTENTICACIÓN EXITOSA
+                // AUTENTICACIÓN EXITOSA
 
                 // Crea el Intent para navegar a MainActivity2 (Dashboard)
                 val dashboardIntent = Intent(this, MainActivity2::class.java)
@@ -54,11 +54,11 @@ class MainActivity : AppCompatActivity() {
 
             }else {
 
-                // 3. AUTENTICACIÓN FALLIDA
+                // AUTENTICACIÓN FALLIDA
                 Toast.makeText(this, "Error: usuario o contraseña incorrectos.", Toast.LENGTH_LONG)
                     .show()
 
-                // Opcional: Limpiar solo el campo de contraseña
+                // Limpiar solo el campo de contraseña
                 etPassword.text
             }
         }

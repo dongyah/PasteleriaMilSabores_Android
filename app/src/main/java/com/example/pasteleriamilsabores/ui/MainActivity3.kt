@@ -21,9 +21,9 @@ import com.example.pasteleriamilsabores.model.Categoria
 import com.example.pasteleriamilsabores.model.Producto
 import com.example.pasteleriamilsabores.repository.ProductosApiRepository
 import kotlinx.coroutines.launch
-import androidx.exifinterface.media.ExifInterface //  Necesario para la rotación EXIF
-import android.graphics.Matrix // Necesario para aplicar la rotación
-import java.io.ByteArrayInputStream // Necesario para leer EXIF desde bytes
+import androidx.exifinterface.media.ExifInterface
+import android.graphics.Matrix
+import java.io.ByteArrayInputStream
 
 class MainActivity3 : AppCompatActivity() {
 
@@ -50,9 +50,7 @@ class MainActivity3 : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE = 102
 
 
-    // =======================================================
-    // 1. LAUNCHER DE RESULTADOS (Cámara)
-    // =======================================================
+    // LAUNCHER DE RESULTADOS (Cámara)
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -87,7 +85,7 @@ class MainActivity3 : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main3)
 
-        // 2. Inicialización de Vistas
+        // Inicialización de Vistas
         etProductCode = findViewById(R.id.etProductCode)
         etProductName = findViewById(R.id.etProductName)
         etProductDescription = findViewById(R.id.etProductDescription)
@@ -121,32 +119,30 @@ class MainActivity3 : AppCompatActivity() {
         }
     }
 
-    // =======================================================
-    // 5. UTILIDAD DE IMAGEN: DECODIFICACIÓN Y ROTACIÓN EXIF
-    // =======================================================
+    // UTILIDAD DE IMAGEN: DECODIFICACIÓN Y ROTACIÓN EXIF
 
-    /**
-     * Convierte una cadena Base64 a un objeto Bitmap, limpiando la cadena
-     * y aplicando la corrección de rotación EXIF (solución a la imagen de lado).
-     */
+
+     //Convierte una cadena Base64 a un objeto Bitmap, limpiando la cadena
+     //y aplicando la corrección de rotación EXIF (solución a la imagen de lado).
+
     private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
         try {
-            // 1. Limpieza de Base64
+            // Limpieza de Base64
             val cleanedBase64Str = base64Str.replace("\n", "").replace("\r", "").replace(" ", "")
             if (cleanedBase64Str.isEmpty()) return null
 
-            // 2. Obtener los bytes de la imagen
+            //  Obtener los bytes de la imagen
             val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
 
-            // 3. Decodificar el Bitmap original
+            // Decodificar el Bitmap original
             val originalBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
-            // 4. Leer la orientación EXIF de los bytes para aplicar la rotación
+            // Leer la orientación EXIF de los bytes para aplicar la rotación
             val inputStream = ByteArrayInputStream(decodedBytes)
             val exif = ExifInterface(inputStream)
             val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
-            // 5. Calcular el ángulo de rotación
+            //  Calcular el ángulo de rotación
             val matrix = Matrix()
             val rotationAngle = when (orientation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
@@ -155,16 +151,16 @@ class MainActivity3 : AppCompatActivity() {
                 else -> 0f
             }
 
-            // 6. Aplicar la rotación
+            // Aplicar la rotación
             matrix.postRotate(rotationAngle)
 
-            // 7. Crear y devolver el Bitmap corregido
+            // Crear y devolver el Bitmap corregido
             return Bitmap.createBitmap(
                 originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true
             )
 
         } catch (e: Exception) {
-            // Si falla la rotación (porque no hay metadata EXIF), devuelve un Bitmap simple
+            // Si falla la rotación  devuelve un Bitmap simple
             try {
                 val cleanedBase64Str = base64Str.replace("\n", "").replace("\r", "").replace(" ", "")
                 val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
@@ -176,9 +172,9 @@ class MainActivity3 : AppCompatActivity() {
         }
     }
 
-    /**
-     * Lanza la actividad de la cámara/galería.
-     */
+
+     //Lanza la actividad de la cámara/galería.
+
     fun onImagePickerClicked(view: View) {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
@@ -212,9 +208,8 @@ class MainActivity3 : AppCompatActivity() {
     }
 
 
-    // =======================================================
-    // 6. LÓGICA DE CARGA DE DATOS (CRUD)
-    // =======================================================
+    // LÓGICA DE crud
+
 
     private fun cargarCategorias() {
         lifecycleScope.launch {
@@ -256,7 +251,7 @@ class MainActivity3 : AppCompatActivity() {
                 etCriticalStock.setText(producto.stock_critico.toString())
                 etImageUrl.setText(producto.imagen_url)
 
-                //  Cargar y mostrar la imagen Base64 (con rotación y limpieza)
+                //  Cargar y mostrar la imagen Base64 rotada
                 if (!producto.imagen_url.isNullOrEmpty()) {
                     val bitmap = decodeBase64ToBitmap(producto.imagen_url)
                     if (bitmap != null) {
@@ -290,9 +285,7 @@ class MainActivity3 : AppCompatActivity() {
     }
 
 
-    // =======================================================
-    // 7. FUNCIÓN DE GUARDADO O ACTUALIZACIÓN (POST / PUT)
-    // =======================================================
+    // FUNCIÓN DE GUARDADO O ACTUALIZACIÓN (POST / PUT)
     private fun guardarOActualizarProducto() {
 
         // 1. Recolección de Datos
@@ -313,31 +306,31 @@ class MainActivity3 : AppCompatActivity() {
         // Prioriza la cadena Base64; si no, usa el texto del EditText
         val imagenUrlParaApi = base64Image ?: etImageUrl.text.toString()
 
-        // 2. Validación
+        // Validación
         if (nombre.isEmpty() || precio <= 0 || stock <= 0 || codigo.isEmpty() || imagenUrlParaApi.isEmpty()) {
             Toast.makeText(this, "Complete todos los campos obligatorios.", Toast.LENGTH_LONG).show()
             return
         }
 
-        // 3. Ejecutar Corrutina y API
+        // Ejecutar Corrutina y API
         lifecycleScope.launch {
 
             val resultado = if (productoIdParaEdicion != 0) {
-                // MODO EDICIÓN: Llama a UPDATE (PUT)
+                //llma a put
                 ProductosApiRepository.updateProducto(
                     id = productoIdParaEdicion,
                     codigo = codigo, nombre = nombre, descripcion = descripcion, precio = precio,
                     stock = stock, stockCritico = stockCritico, imagenUrl = imagenUrlParaApi, categoriaId = categoriaId
                 )
             } else {
-                // MODO CREACIÓN: Llama a POST
+                //llama a post
                 ProductosApiRepository.postProducto(
                     codigo = codigo, nombre = nombre, descripcion = descripcion, precio = precio,
                     stock = stock, stockCritico = stockCritico, imagenUrl = imagenUrlParaApi, categoriaId = categoriaId
                 )
             }
 
-            // 4. Procesar Resultado
+            // Procesar Resultado
             resultado.onSuccess { respuesta ->
                 if (respuesta.status == "success") {
                     Toast.makeText(this@MainActivity3, "ÉXITO: ${respuesta.message}", Toast.LENGTH_LONG).show()

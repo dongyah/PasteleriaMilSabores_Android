@@ -17,10 +17,8 @@ object ProductosApiRepository {
     // Inicializa el servicio Retrofit
     private val apiService: PasteleriaApiService = RetrofitClient.apiService
 
-    // =======================================================
-    // 1. LEER (READ)
-    // =======================================================
 
+    //LEER READ
     // Obtiene la lista de todos los productos (Catálogo)
     suspend fun getProductos(): Result<List<Producto>> =
         withContext(Dispatchers.IO) {
@@ -46,9 +44,7 @@ object ProductosApiRepository {
         }
 
 
-    // =======================================================
-    // 2. CREAR (CREATE)
-    // =======================================================
+    // CREATE
     // Inserta un producto nuevo en la BD
     suspend fun postProducto(
         codigo: String,
@@ -69,9 +65,7 @@ object ProductosApiRepository {
         }
 
 
-    // =======================================================
-    // 3. ACTUALIZAR (UPDATE)
-    // =======================================================
+    //UPDATE
     // Modifica un producto existente, requiere el 'id'.
     suspend fun updateProducto(
         id: Int, // El ID es clave para la actualización
@@ -93,9 +87,7 @@ object ProductosApiRepository {
         }
 
 
-    // =======================================================
-    // 4. ELIMINAR (DELETE)
-    // =======================================================
+    //DELETE
     // Elimina un producto por su ID.
     suspend fun deleteProducto(id: Int): Result<RespuestaApi> =
         withContext(Dispatchers.IO) {

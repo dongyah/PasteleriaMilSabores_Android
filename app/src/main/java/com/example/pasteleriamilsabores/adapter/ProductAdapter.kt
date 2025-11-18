@@ -29,9 +29,6 @@ class ProductAdapter(
     private val listener: OnItemActionListener
 ) : RecyclerView.Adapter<ProductAdapter.ProductoViewHolder>() {
 
-    // =======================================================
-    // FUNCIÓN CLAVE: DECODIFICACIÓN Y ROTACIÓN BASE64
-    // =======================================================
     private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
         try {
             val cleanedBase64Str = base64Str
@@ -39,18 +36,18 @@ class ProductAdapter(
 
             if (cleanedBase64Str.isEmpty()) return null
 
-            // 1. Obtener los bytes de la imagen
+            // Obtener los bytes de la imagen
             val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
 
-            // 2. Decodificar el Bitmap original sin rotar
+            // Decodificar el Bitmap original sin rotar
             val originalBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
-            // 3. Leer la orientación EXIF de los bytes
+            // Leer la orientación EXIF de los bytes
             val inputStream = ByteArrayInputStream(decodedBytes)
             val exif = ExifInterface(inputStream)
             val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
-            // 4. Calcular el ángulo de rotación necesario
+            // Calcular el ángulo de rotación necesario
             val matrix = Matrix()
             val rotationAngle = when (orientation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
@@ -59,10 +56,10 @@ class ProductAdapter(
                 else -> 0f
             }
 
-            // 5. Aplicar la rotación
+            // Aplicar la rotación
             matrix.postRotate(rotationAngle)
 
-            // 6. Crear y devolver el Bitmap corregido
+            // Crear y devolver el Bitmap corregido
             return Bitmap.createBitmap(
                 originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true
             )
@@ -74,9 +71,7 @@ class ProductAdapter(
     }
 
 
-    /**
-     * ViewHolder: Mantiene las referencias a las vistas de item_product.xml
-     */
+    //manntiene las referencias a las vistas de item_product.xml
     inner class ProductoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val tvProductName: TextView = view.findViewById(R.id.tvProductName)
@@ -93,11 +88,11 @@ class ProductAdapter(
             val precioFormateado = currencyFormatter.format(producto.precio)
             tvProductDetails.text = "Stock: ${producto.stock} | Precio: ${precioFormateado}"
 
-            // LÓGICA DE VISUALIZACIÓN DE IMAGEN (BASE64)
+            // visualiacion de imagen base64
             val base64Image = producto.imagen_url
 
             if (!base64Image.isNullOrEmpty()) {
-                val bitmap = decodeBase64ToBitmap(base64Image) //  Llama a la función con ROTACIÓN
+                val bitmap = decodeBase64ToBitmap(base64Image) //  Llama a la función con rotación porque la imagen se veia volteada
                 if (bitmap != null) {
                     ivProductIcon.setImageBitmap(bitmap)
                     ivProductIcon.scaleType = ImageView.ScaleType.CENTER_CROP
