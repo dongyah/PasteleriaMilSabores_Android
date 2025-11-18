@@ -16,8 +16,6 @@ Directorio de la API: Copia todos los archivos .php (incluyendo guardar_producto
 $$C:\xampp\htdocs\pasteleria$$
 Verificación de Puertos: Si MySQL no inicia en el puerto por defecto (3306), XAMPP lo habrá cambiado a 3307. Todos los scripts PHP (y la conexión de Kotlin) están configurados para usar el puerto 3307 y el host 127.0.0.1 para asegurar la conexión.
 
-Clave API de Gemini: La clave API debe ser insertada manualmente en la variable $GEMINI_API_KEY dentro del script generar_ia.php (y analizar_imagen.php).
-
 C. Configuración de la Base de Datos
 Acción: Inicia phpMyAdmin (http://localhost/phpmyadmin/).
 
