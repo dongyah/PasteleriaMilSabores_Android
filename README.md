@@ -1,8 +1,27 @@
 
+🍰 Proyecto Final: Pastelería Mil Sabores - App de Gestión
+Este proyecto es una aplicación móvil de gestión de inventario y catálogo, desarrollada en Kotlin para Android. Implementa el CRUD completo (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura limpia basada en Corrutinas y Retrofit para comunicarse con un servidor PHP/MySQL. Además, incluye la integración de Inteligencia Artificial (IA) de Gemini para enriquecer el contenido de los productos.
 
-# 🍰 Proyecto Final: Pastelería Mil Sabores - App de Gestión
+1. ⚙️ Setup del Entorno Local (XAMPP Requerido)
+Para ejecutar y probar la aplicación de forma local, es necesario configurar un servidor web y la base de datos a la que la aplicación Kotlin intenta conectarse.
 
-Este proyecto es una aplicación móvil de gestión de inventario y catálogo, desarrollada en **Kotlin** para Android. Implementa el **CRUD completo** (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura limpia basada en **Corrutinas** y **Retrofit** para comunicarse con un servidor PHP/MySQL. Además, incluye la integración de **Inteligencia Artificial (IA) de Gemini** para enriquecer el contenido de los productos.
+A. Requisitos
+XAMPP: Instalado y configurado.
+
+Servicios Activos: Los módulos Apache y MySQL deben estar corriendo.
+
+B. Configuración del Servidor PHP (Rutas y Puerto)
+Directorio de la API: Copia todos los archivos .php (incluyendo guardar_producto.php, obtener_categorias.php, etc.) en la siguiente ruta de tu instalación de XAMPP:
+
+$$C:\xampp\htdocs\pasteleria$$
+Verificación de Puertos: Si MySQL no inicia en el puerto por defecto (3306), XAMPP lo habrá cambiado a 3307. Todos los scripts PHP (y la conexión de Kotlin) están configurados para usar el puerto 3307 y el host 127.0.0.1 para asegurar la conexión.
+
+Clave API de Gemini: La clave API debe ser insertada manualmente en la variable $GEMINI_API_KEY dentro del script generar_ia.php (y analizar_imagen.php).
+
+C. Configuración de la Base de Datos
+Acción: Inicia phpMyAdmin (http://localhost/phpmyadmin/).
+
+Ejecución: Utiliza el script SQL completo de la documentación del proyecto para crear la base de datos (pasteleria_mil_sabores) y poblar las tablas (Productos, Categorias).
 
 ## 1\. ⚙️ Arquitectura y Tecnologías Clave
 
