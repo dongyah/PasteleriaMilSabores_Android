@@ -35,7 +35,6 @@ class CameraActivity : AppCompatActivity() {
 
     private val CAMERA_PERMISSION_REQUEST_CODE = 101 // Código para la solicitud de permiso
 
-    // LAUNCHER para obtener contenido (Galería)
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -50,7 +49,6 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
 
-        // 1. Inicialización de Vistas
         btnTomarFoto = findViewById(R.id.btn_tomar_foto)
         btnCancelar = findViewById(R.id.btn_cancelar_foto)
         btnCargarGaleria = findViewById(R.id.btn_cargar_galeria) // Inicializa botón de galería
@@ -59,7 +57,6 @@ class CameraActivity : AppCompatActivity() {
 
         btnTomarFoto.isEnabled = false
 
-        // 2. Control de Permisos
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED
         ) {
@@ -72,7 +69,6 @@ class CameraActivity : AppCompatActivity() {
             )
         }
 
-        // 3. Listeners
         btnTomarFoto.setOnClickListener {
             tomarFotoYDevolverResultado()
         }

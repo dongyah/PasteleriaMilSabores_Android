@@ -17,7 +17,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import android.graphics.Matrix
-import java.io.ByteArrayInputStream // Nuevo: Para leer EXIF desde el array de bytes
+import java.io.ByteArrayInputStream
 
 interface OnItemActionListener {
     fun onEditClicked(productoId: Int)
@@ -36,18 +36,14 @@ class ProductAdapter(
 
             if (cleanedBase64Str.isEmpty()) return null
 
-            // Obtener los bytes de la imagen
             val decodedBytes = Base64.decode(cleanedBase64Str, Base64.DEFAULT)
 
-            // Decodificar el Bitmap original sin rotar
             val originalBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
-            // Leer la orientación EXIF de los bytes
             val inputStream = ByteArrayInputStream(decodedBytes)
             val exif = ExifInterface(inputStream)
             val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
-            // Calcular el ángulo de rotación necesario
             val matrix = Matrix()
             val rotationAngle = when (orientation) {
                 ExifInterface.ORIENTATION_ROTATE_90 -> 90f
@@ -56,10 +52,8 @@ class ProductAdapter(
                 else -> 0f
             }
 
-            // Aplicar la rotación
             matrix.postRotate(rotationAngle)
 
-            // Crear y devolver el Bitmap corregido
             return Bitmap.createBitmap(
                 originalBitmap, 0, 0, originalBitmap.width, originalBitmap.height, matrix, true
             )
@@ -71,7 +65,6 @@ class ProductAdapter(
     }
 
 
-    //manntiene las referencias a las vistas de item_product.xml
     inner class ProductoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val tvProductName: TextView = view.findViewById(R.id.tvProductName)
@@ -92,7 +85,7 @@ class ProductAdapter(
             val base64Image = producto.imagen_url
 
             if (!base64Image.isNullOrEmpty()) {
-                val bitmap = decodeBase64ToBitmap(base64Image) //  Llama a la función con rotación porque la imagen se veia volteada
+                val bitmap = decodeBase64ToBitmap(base64Image)
                 if (bitmap != null) {
                     ivProductIcon.setImageBitmap(bitmap)
                     ivProductIcon.scaleType = ImageView.ScaleType.CENTER_CROP
@@ -105,7 +98,6 @@ class ProductAdapter(
                 ivProductIcon.scaleType = ImageView.ScaleType.CENTER_INSIDE
             }
 
-            // LISTENERS DE ACCIÓN CLAVE
             itemView.setOnClickListener { listener.onEditClicked(producto.id) }
             btnDelete.setOnClickListener { listener.onDeleteClicked(producto.id) }
         }

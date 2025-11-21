@@ -35,8 +35,6 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         // Si se devuelve RESULT_OK (se guardó o editó un producto)
         if (result.resultCode == Activity.RESULT_OK) {
             Toast.makeText(this, "Operación exitosa. Recargando lista...", Toast.LENGTH_SHORT).show()
-
-            // ⭐Recarga los datos reales de la API
             cargarProductosDesdeApi()
         }
     }
@@ -46,18 +44,14 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
-        // Inicialización de Vistas
         tvProductsCount = findViewById(R.id.tvProductsCount)
         recyclerView = findViewById(R.id.recyclerViewProducts)
 
-        // Configurar el RecyclerView y el adaptador inicial
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Inicializa el adaptador con una lista vacía y pasándose a sí mismo como listener
         productAdapter = ProductAdapter(productosList, this)
         recyclerView.adapter = productAdapter
 
-        // Carga inicial de productos
         cargarProductosDesdeApi()
     }
 
@@ -92,9 +86,6 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
 
     }
 
-
-     //Edición: Se llama cuando el usuario hace clic en el ítem o botón de edición OnItemActionListener
-
     override fun onEditClicked(productoId: Int) {
         val intent = Intent(this, MainActivity3::class.java).apply {
             // Pasamos el ID del producto seleccionado para la edición
@@ -103,9 +94,6 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         // Usamos el Launcher para abrir la actividad y esperar el resultado
         cargarProductoLauncher.launch(intent)
     }
-
-
-     //Eliminación: Se llama cuando el usuario hace clic en el botón de eliminar.
 
     override fun onDeleteClicked(productoId: Int) {
         // Mostrar diálogo de confirmación antes de la eliminación
@@ -137,17 +125,11 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         }
     }
 
-
-     //Maneja el clic en el botón '+' del XML (Crear Producto).
-
     public fun onAddProductClicked(view: View) {
         val intent = Intent(this, MainActivity3::class.java)
         // Usamos el Launcher para abrir la actividad y esperar el resultado
         cargarProductoLauncher.launch(intent)
     }
-
-
-     //Maneja el clic en el botón de Logout (simulación).
 
     public fun onLogoutClicked(view: View) {
         Toast.makeText(this, "Cerrando sesión.", Toast.LENGTH_SHORT).show()

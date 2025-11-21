@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Constantes para las credenciales de la pastelería
+        // credenciales de la pastelería
         val ADMIN_USER = "admin"
         val ADMIN_PASS = "123"
 
@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
         val etPassword: EditText = findViewById(R.id.etPassword)
         val btnLogin: Button = findViewById(R.id.btnLogin)
 
-        // Accion sobre el boton
         btnLogin.setOnClickListener{
             val enteredUser = etUsername.text.toString()
             val enteredPass = etPassword.text.toString()
@@ -39,8 +38,6 @@ class MainActivity : AppCompatActivity() {
             if(enteredUser == ADMIN_USER && enteredPass == ADMIN_PASS){
 
                 // AUTENTICACIÓN EXITOSA
-
-                // Crea el Intent para navegar a MainActivity2 (Dashboard)
                 val dashboardIntent = Intent(this, MainActivity2::class.java)
 
                 startActivity(dashboardIntent)

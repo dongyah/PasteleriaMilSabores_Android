@@ -10,7 +10,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import java.nio.ByteBuffer
-import android.app.Activity // Importar Activity para WindowManager
+import android.app.Activity
 
 class CameraManager(private val context: Context) {
 

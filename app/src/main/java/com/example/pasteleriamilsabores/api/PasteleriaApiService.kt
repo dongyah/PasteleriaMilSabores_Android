@@ -15,7 +15,7 @@ interface PasteleriaApiService {
     @GET("obtener_producto.php")
     suspend fun getProductos(): List<Producto>
 
-    // LEER CATEGORÍAS (Spinner)
+    // LEER CATEGORÍAS
     @GET("obtener_categoria.php")
     suspend fun getCategorias(): List<Categoria>
 
