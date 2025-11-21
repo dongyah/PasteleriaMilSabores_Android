@@ -1,11 +1,3 @@
-¡Entendido\! Eliminaremos **todas** las referencias a la Inteligencia Artificial (IA) y Gemini, dejando el proyecto enfocado únicamente en la funcionalidad **CRUD, CameraX, Base64, y la arquitectura Corrutinas/Retrofit**.
-
-También ajustaré la configuración de XAMPP para usar el puerto **3306** como valor por defecto, asumiendo que el error se resolvió.
-
-Aquí tienes el archivo **README.md** final y limpio, listo para GitHub:
-
------
-
 # 🍰 Proyecto Final: Pastelería Mil Sabores - App de Gestión
 
 Este proyecto es una aplicación móvil de gestión de inventario y catálogo, desarrollada en **Kotlin** para Android. Implementa el **CRUD completo** (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura limpia basada en **Corrutinas** y **Retrofit** para comunicarse con un servidor **PHP/MySQL** local.
