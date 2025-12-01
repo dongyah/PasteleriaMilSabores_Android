@@ -12,19 +12,20 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.pasteleriamilsabores.R
 
 class MainActivity : AppCompatActivity() {
+
+    private val ADMIN_USER = "admin"
+    private val ADMIN_PASS = "123"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        // credenciales de la pastelería
-        val ADMIN_USER = "admin"
-        val ADMIN_PASS = "123"
 
         // 1. Declaramos variables con los elementos layout
         val etUsername: EditText =  findViewById(R.id.etUsername)
@@ -32,32 +33,30 @@ class MainActivity : AppCompatActivity() {
         val btnLogin: Button = findViewById(R.id.btnLogin)
 
         btnLogin.setOnClickListener{
-            val enteredUser = etUsername.text.toString()
-            val enteredPass = etPassword.text.toString()
+            val enteredUser = etUsername.text.toString().trim()
+            val enteredPass = etPassword.text.toString().trim()
+
+            if (enteredUser.isEmpty() || enteredPass.isEmpty()) {
+                Toast.makeText(this, "Por favor, completar todos los campos.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
             if(enteredUser == ADMIN_USER && enteredPass == ADMIN_PASS){
 
                 // AUTENTICACIÓN EXITOSA
                 val dashboardIntent = Intent(this, MainActivity2::class.java)
-
                 startActivity(dashboardIntent)
-
                 // mensajde de bienvenida
                 Toast.makeText(this, "Bienvenido, Administrador.", Toast.LENGTH_SHORT).show()
-
                 // Cierra la Activity de Login para evitar volver atrás
                 finish()
 
-
             }else {
-
                 // AUTENTICACIÓN FALLIDA
-                Toast.makeText(this, "Error: usuario o contraseña incorrectos.", Toast.LENGTH_LONG)
-                    .show()
-
+                Toast.makeText(this, "Error: usuario o contraseña incorrectos.", Toast.LENGTH_LONG).show()
                 // Limpiar solo el campo de contraseña
-                etPassword.text
+                etPassword.text.clear()
             }
-        }
-    }
+}
+}
 }

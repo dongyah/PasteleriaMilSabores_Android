@@ -44,6 +44,7 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -92,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Nombre del Archivo de Imagen (para la BD)"
+                android:text="Nombre del Archivo de Imagen"
                 android:textColor="#4A4A4A"
                 android:textSize="12sp" />
             <EditText
@@ -101,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/edit_text_background"
-                android:hint="Ej: torta_chocolate.jpg (Usado para Base64 o URL)"
+                android:hint="Ej: torta_chocolate.jpg"
                 android:inputType="text"
                 android:padding="12dp" />
 
@@ -123,7 +124,7 @@
             android:layout_marginBottom="12dp"
             android:background="@drawable/edit_text_background"
             android:hint="Ej: P-MILS-001"
-            android:inputType="textCapCharacters"
+            android:inputType="text"
             android:padding="12dp" />
 
         <TextView
@@ -202,29 +203,23 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stock Crítico (Mínimo) *"
+            android:textColor="#333333"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/etCriticalStock"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stock Crítico (Mínimo) *"
-                android:textColor="#333333"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/etCriticalStock"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/edit_text_background"
-                android:hint="Ej: 5"
-                android:inputType="number"
-                android:padding="12dp" />
-        </LinearLayout>
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Ej: 5"
+            android:inputType="number"
+            android:padding="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -244,33 +239,40 @@
             android:padding="12dp"
             android:spinnerMode="dropdown" />
 
-        <LinearLayout
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descripción"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etProductDescription"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/edit_text_background"
+            android:gravity="top"
+            android:hint="Describe brevemente el producto o genera con IA..."
+            android:inputType="textMultiLine"
+            android:padding="12dp"
+            android:scrollbars="vertical" />
+
+        <Button
+            android:id="@+id/btnAiDescription"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:orientation="vertical"
-            android:padding="0dp">
+            android:text="GENERAR DESCRIPCIÓN CON IA"
+            android:textColor="#C32C52"
+            android:backgroundTint="@android:color/white"
+            app:icon="@drawable/ic_wand_text"
+            app:iconTint="#C32C52"
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="16dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Descripción"
-                android:textColor="#333333"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etProductDescription"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginTop="4dp"
-                android:background="@drawable/edit_text_background"
-                android:gravity="top"
-                android:hint="Describe brevemente el producto..."
-                android:inputType="textMultiLine"
-                android:padding="12dp"
-                android:scrollbars="vertical" />
-        </LinearLayout>
 
         <Button
             android:id="@+id/btnSaveProduct"

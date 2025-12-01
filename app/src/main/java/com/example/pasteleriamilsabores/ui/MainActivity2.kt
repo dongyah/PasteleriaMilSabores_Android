@@ -22,19 +22,18 @@ import kotlinx.coroutines.launch
 
 class MainActivity2 : AppCompatActivity(), OnItemActionListener {
 
-    // Declaraciones de Vistas y Datos
+    // declaraciones de vistas y datos
     private var productosList: List<Producto> = emptyList()
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvProductsCount: TextView
-    private lateinit var productAdapter: ProductAdapter // Variable para guardar el adaptador
+    private lateinit var productAdapter: ProductAdapter
 
-//LAUNCHER DE RESULTADOS (Para refrescar después de MainActivity3)
+    // launcher de resultados (refresca lista al volver de mainactivity3)
     private val cargarProductoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // Si se devuelve RESULT_OK (se guardó o editó un producto)
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this, "Operación exitosa. Recargando lista...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Operación exitosa. recargando lista...", Toast.LENGTH_SHORT).show()
             cargarProductosDesdeApi()
         }
     }
@@ -52,25 +51,25 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         productAdapter = ProductAdapter(productosList, this)
         recyclerView.adapter = productAdapter
 
+        // carga inicial de datos
         cargarProductosDesdeApi()
     }
 
 
-     // implementamos Corrutinas para obtener la lista de productos de la API.
-
+    // carga los productos desde el repositorio híbrido (php o sqlite)
     private fun cargarProductosDesdeApi() {
         lifecycleScope.launch {
-
-            val resultado = ProductosApiRepository.getProductos()
+            // llama a getallproductos y pasa el contexto
+            val resultado = ProductosApiRepository.getAllProductos(applicationContext)
 
             resultado.onSuccess { productos ->
-                // Éxito: Los datos de la BD llegan correctamente
+                // éxito: los datos llegan correctamente
                 productosList = productos
                 actualizarUI(productosList)
             }.onFailure { exception ->
-                // Falla: Error de red, PHP caído, o JSON malformado
+                // falla: error de red o bd
                 Toast.makeText(this@MainActivity2, "Error al cargar productos: ${exception.message}", Toast.LENGTH_LONG).show()
-                Log.e("API_LOAD", "Fallo al cargar productos desde la API", exception)
+                Log.e("DB_LOAD", "Fallo al cargar productos", exception)
                 actualizarUI(emptyList())
             }
         }
@@ -78,60 +77,61 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
 
     // actualizacion de la interfaz
     private fun actualizarUI(productos: List<Producto>) {
-        // 1. Contador
+        // 1. contador
         tvProductsCount.text = getString(R.string.products_loaded_count, productos.size)
 
-        // 2. Notificar al adaptador que los datos han cambiado
+        // 2. notificar al adaptador que los datos han cambiado
         (recyclerView.adapter as ProductAdapter).updateData(productos)
-
     }
 
+    // edición: implementa onitemactionlistener
     override fun onEditClicked(productoId: Int) {
         val intent = Intent(this, MainActivity3::class.java).apply {
-            // Pasamos el ID del producto seleccionado para la edición
+            // pasamos el id del producto seleccionado para la edición
             putExtra("PRODUCT_ID", productoId)
         }
-        // Usamos el Launcher para abrir la actividad y esperar el resultado
+        // usamos el launcher para abrir la actividad
         cargarProductoLauncher.launch(intent)
     }
 
+    // eliminación: implementa onitemactionlistener
     override fun onDeleteClicked(productoId: Int) {
-        // Mostrar diálogo de confirmación antes de la eliminación
+        // mostrar diálogo de confirmación antes de la eliminación
         AlertDialog.Builder(this)
-            .setTitle("Confirmar Eliminación")
-            .setMessage("¿Estás seguro de que quieres eliminar el producto ID $productoId?")
-            .setPositiveButton("Sí, Eliminar") { _, _ ->
+            .setTitle("Confirmar eliminación")
+            .setMessage("¿Estás seguro de que quieres eliminar el producto id $productoId?")
+            .setPositiveButton("Sí, eliminar") { _, _ ->
                 ejecutarEliminacion(productoId)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    // Función de ejecución asíncrona para eliminar un producto
+    // función de ejecución asíncrona para eliminar un producto
     private fun ejecutarEliminacion(productoId: Int) {
         lifecycleScope.launch {
-            val resultado = ProductosApiRepository.deleteProducto(productoId)
+            // llama a deleteproducto, requiere el contexto y devuelve result<unit>
+            val resultado = ProductosApiRepository.deleteProducto(applicationContext, productoId)
 
-            resultado.onSuccess { respuesta ->
-                if (respuesta.status == "success") {
-                    Toast.makeText(this@MainActivity2, "Éxito: ${respuesta.message}", Toast.LENGTH_LONG).show()
-                    cargarProductosDesdeApi() // Refresca la lista inmediatamente
-                } else {
-                    Toast.makeText(this@MainActivity2, "Error al eliminar: ${respuesta.message}", Toast.LENGTH_LONG).show()
-                }
+            // el resultado es result<unit>, solo verificamos éxito o fallo
+            resultado.onSuccess {
+                Toast.makeText(this@MainActivity2, "Éxito: producto eliminado.", Toast.LENGTH_LONG).show()
+                cargarProductosDesdeApi() // refresca la lista inmediatamente
             }.onFailure { exception ->
-                Toast.makeText(this@MainActivity2, "Error de red al eliminar.", Toast.LENGTH_LONG).show()
+                // captura errores de red si el repositorio falló
+                Toast.makeText(this@MainActivity2, "Error al eliminar: ${exception.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    public fun onAddProductClicked(view: View) {
+    // botón '+' del xml
+    fun onAddProductClicked(view: View) {
         val intent = Intent(this, MainActivity3::class.java)
-        // Usamos el Launcher para abrir la actividad y esperar el resultado
         cargarProductoLauncher.launch(intent)
     }
 
-    public fun onLogoutClicked(view: View) {
+    // botón logout del xml
+    fun onLogoutClicked(view: View) {
         Toast.makeText(this, "Cerrando sesión.", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

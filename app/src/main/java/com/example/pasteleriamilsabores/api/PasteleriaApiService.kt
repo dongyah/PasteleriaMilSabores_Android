@@ -37,7 +37,7 @@ interface PasteleriaApiService {
         @Field("categoria_id") categoriaId: Int
     ): RespuestaApi
 
-    // ACTUALIZAR (PUT)
+    // ACTUALIZAR (USAREMOS PUT PARA LA EDICION)
     @PUT("actualizar_producto.php")
     @FormUrlEncoded
     suspend fun updateProducto(

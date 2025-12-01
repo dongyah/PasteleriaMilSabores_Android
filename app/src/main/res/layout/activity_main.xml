@@ -90,7 +90,7 @@
             android:layout_marginTop="32dp"
             android:backgroundTint="#C32C52"
             android:padding="16dp"
-            android:text="Ingresar"
+            android:text="INGRESAR"
             android:textSize="18sp"
             android:textStyle="bold"
             app:cornerRadius="12dp"

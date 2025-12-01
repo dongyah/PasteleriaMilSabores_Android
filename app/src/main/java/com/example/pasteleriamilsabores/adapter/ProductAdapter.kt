@@ -31,6 +31,7 @@ class ProductAdapter(
 
     private fun decodeBase64ToBitmap(base64Str: String): Bitmap? {
         try {
+            // limpia la cadena base64
             val cleanedBase64Str = base64Str
                 .replace("\n", "").replace("\r", "").replace(" ", "")
 
@@ -40,6 +41,7 @@ class ProductAdapter(
 
             val originalBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
+            // lee la información exif para corregir la rotación de la imagen
             val inputStream = ByteArrayInputStream(decodedBytes)
             val exif = ExifInterface(inputStream)
             val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
@@ -59,7 +61,7 @@ class ProductAdapter(
             )
 
         } catch (e: Exception) {
-            Log.e("BASE64_ROTATE", "Error al decodificar y rotar: ${e.message}")
+            Log.e("BASE64_ROTATE", "error al decodificar y rotar: ${e.message}")
             return null
         }
     }
@@ -72,6 +74,7 @@ class ProductAdapter(
         val ivProductIcon: ImageView = view.findViewById(R.id.ivProductIcon)
         val btnDelete: ImageButton = view.findViewById(R.id.btnDelete)
 
+        // formateador de moneda para que usemos peso chileno sin los numeros decimales
         private val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
             maximumFractionDigits = 0
         }
@@ -79,9 +82,9 @@ class ProductAdapter(
         fun bind(producto: Producto) {
             tvProductName.text = producto.nombre
             val precioFormateado = currencyFormatter.format(producto.precio)
-            tvProductDetails.text = "Stock: ${producto.stock} | Precio: ${precioFormateado}"
+            tvProductDetails.text = "stock: ${producto.stock} | precio: ${precioFormateado}"
 
-            // visualiacion de imagen base64
+            // visualización de imagen base64
             val base64Image = producto.imagen_url
 
             if (!base64Image.isNullOrEmpty()) {

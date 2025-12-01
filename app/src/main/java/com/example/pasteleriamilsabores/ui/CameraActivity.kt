@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -115,7 +114,7 @@ class CameraActivity : AppCompatActivity() {
         } ?: Toast.makeText(this, "Cámara no lista", Toast.LENGTH_SHORT).show()
     }
 
-// PROCESA LA IMAGEN QUE ESCOGEMOS DE LA GALERIA Y LA CONVIERTE A BASE64
+    // PROCESA LA IMAGEN QUE ESCOGEMOS DE LA GALERIA Y LA CONVIERTE A BASE64
     private fun handleGalleryImageUri(uri: Uri) {
         try {
             // Lee la URI como un Bitmap (maneja compatibilidad de versiones)
@@ -149,7 +148,7 @@ class CameraActivity : AppCompatActivity() {
 
 
 
-     //Inicializa el CameraManager y la vista previa.
+    //Inicializa el CameraManager y la vista previa.
 
     private fun setupCamera() {
         cameraManager = CameraManager(this)
@@ -158,7 +157,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
-// MANEJO DE PERMISOS
+    // MANEJO DE PERMISOS
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

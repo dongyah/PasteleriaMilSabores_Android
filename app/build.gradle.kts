@@ -36,6 +36,12 @@ android {
     }
 }
 
+// ⭐️ AGREGAR ESTE BLOQUE EN build.gradle (Module: app) ⭐️
+repositories {
+    google()
+    mavenCentral()
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -72,4 +78,6 @@ dependencies {
 
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
+    // ⭐️ DEPENDENCIA DE GOOGLE GENERATIVE AI (GEMINI)
+    implementation("com.google.ai.client.generativeai:generativeai:0.5.0")    //
 }
