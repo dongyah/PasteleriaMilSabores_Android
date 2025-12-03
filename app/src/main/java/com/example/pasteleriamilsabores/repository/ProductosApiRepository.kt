@@ -66,7 +66,7 @@ object ProductosApiRepository {
 
     // operaciones de escritura (create/update/delete - híbrido)
 
-    // crea un nuevo producto. si php falla, la operación falla.
+    // crea un nuevo producto. si php falla, guarda en sqlite y espera sincronizar.
     suspend fun insertProducto(context: Context, producto: Producto): Result<Long> =
         withContext(Dispatchers.IO) {
             val dbHelper = PasteleriaDbHelper(context)
@@ -93,9 +93,22 @@ object ProductosApiRepository {
                     Result.success(rowId)
                 }
             } else {
-                // 3. fallo: si falla la red, devuelve error.
-                Log.e("REPO_SYNC", "guardar falló en php: ${apiResult.exceptionOrNull()?.message}")
-                throw IOException("no se pudo conectar al servidor php.")
+                // 3. FALLBACK OFFLINE: Si falla la red, guardamos SÓLO en SQLite y devolvemos éxito local.
+                try {
+                    val rowId = dbHelper.use { it.insertProducto(producto) }
+
+                    if (rowId > 0) {
+                        Log.w("REPO_SYNC", "guardado offline. requiere sincronización.")
+                        Result.success(rowId)
+                    } else {
+                        // Falla la inserción local (ej. código duplicado)
+                        throw IOException("fallo al guardar en sqlite (revisar código/id duplicado).")
+                    }
+                } catch (e: Exception) {
+                    // Falla incluso el guardado local
+                    Log.e("SQLITE_SAVE", "fallo completo: ${e.message}")
+                    throw IOException("no se pudo guardar el producto. ${e.message}")
+                }
             }
         }
 
@@ -120,40 +133,45 @@ object ProductosApiRepository {
             }
 
             return@withContext if (apiResult.isSuccess) {
-                // 2. éxito en php: actualiza sqlite
+                // 2. éxito en php: actualiza en sqlite
                 dbHelper.use {
                     it.updateProducto(producto)
                 }
-                Log.i("REPO_SYNC", "actualización exitosa en php.")
+                Log.i("REPO_SYNC", "update exitoso en php y sqlite.")
                 Result.success(Unit)
             } else {
-                // 3. fallo: si falla la red/api, lanza una excepción.
-                Log.e("REPO_SYNC", "actualización falló en php: ${apiResult.exceptionOrNull()?.message}")
-                throw IOException("no se pudo conectar al servidor php.")
+                // 3. FALLBACK OFFLINE: Si falla la red, actualizamos SÓLO en SQLite.
+                val localRows = dbHelper.use { it.updateProducto(producto) }
+
+                if (localRows > 0) {
+                    Log.w("REPO_SYNC", "actualización guardada OFFLINE. requiere sincronización.")
+                    Result.success(Unit)
+                } else {
+                    // Si no se encontró la fila localmente.
+                    throw IOException("fallo al guardar offline. producto no encontrado.")
+                }
             }
         }
 
-    // elimina un producto. si php falla, la operación falla.
+    // elimina un producto. si php falla, cambia a sqlite
     suspend fun deleteProducto(context: Context, id: Int): Result<Unit> =
         withContext(Dispatchers.IO) {
             val dbHelper = PasteleriaDbHelper(context)
 
-            // 1. intentar eliminar en php
-            val apiResult = runCatching {
-                apiService.deleteProducto(id)
-            }
+            val apiResult = runCatching { apiService.deleteProducto(id) }
 
             return@withContext if (apiResult.isSuccess) {
-                // 2. éxito en php: elimina de sqlite
+                // Éxito en PHP: elimina de SQLite.
                 dbHelper.use {
                     it.deleteProducto(id)
                 }
                 Log.i("REPO_SYNC", "eliminación exitosa en php.")
                 Result.success(Unit)
             } else {
-                // 3. fallo: si falla la red/api, lanza una excepción.
-                Log.e("REPO_SYNC", "eliminación falló en php: ${apiResult.exceptionOrNull()?.message}")
-                throw IOException("no se pudo conectar al servidor php.")
+                // FALLBACK OFFLINE. Eliminar SÓLO de SQLite.
+                dbHelper.use { it.deleteProducto(id) }
+                Log.w("REPO_SYNC", "eliminación guardada OFFLINE.")
+                Result.success(Unit)
             }
         }
 
@@ -161,6 +179,7 @@ object ProductosApiRepository {
     // llama a gemini para generar una descripción de producto.
     suspend fun generateDescription(nombreProducto: String): Result<String> =
         withContext(Dispatchers.IO) {
+            // Asumiendo que ahora usamos DescriptionIARepository
             DescriptionIARepository.generateDescription(nombreProducto)
         }
 }
