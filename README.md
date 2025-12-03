@@ -1,102 +1,118 @@
+# 🍰 Pastelería Mil Sabores - Gestión de Productos
 
-🍰 Proyecto Final: Pastelería Mil Sabores - App de Gestión
-Este proyecto es una aplicación móvil de gestión de inventario y catálogo, desarrollada en Kotlin para Android. Implementa el CRUD completo (Crear, Leer, Actualizar, Eliminar) utilizando una arquitectura limpia basada en Corrutinas y Retrofit para comunicarse con un servidor PHP/MySQL. Además, incluye la integración de Inteligencia Artificial (IA) de Gemini para enriquecer el contenido de los productos.
+## 🔖 Rama: `entrega-3`
 
-1. ⚙️ Setup del Entorno Local (XAMPP Requerido)
-Para ejecutar y probar la aplicación de forma local, es necesario configurar un servidor web y la base de datos a la que la aplicación Kotlin intenta conectarse.
-
-A. Requisitos
-XAMPP: Instalado y configurado.
-
-Servicios Activos: Los módulos Apache y MySQL deben estar corriendo.
-
-B. Configuración del Servidor PHP (Rutas y Puerto)
-Directorio de la API: Copia todos los archivos .php (incluyendo guardar_producto.php, obtener_categorias.php, etc.) en la siguiente ruta de tu instalación de XAMPP:
-
-$$C:\xampp\htdocs\pasteleria$$
-Verificación de Puertos: Si MySQL no inicia en el puerto por defecto (3306), XAMPP lo habrá cambiado a 3307. Todos los scripts PHP (y la conexión de Kotlin) están configurados para usar el puerto 3307 y el host 127.0.0.1 para asegurar la conexión.
-
-C. Configuración de la Base de Datos
-Acción: Inicia phpMyAdmin (http://localhost/phpmyadmin/).
-
-Ejecución: Utiliza el script SQL completo de la documentación del proyecto para crear la base de datos (pasteleria_mil_sabores) y poblar las tablas (Productos, Categorias).
-
-## 1\. ⚙️ Arquitectura y Tecnologías Clave
-
-La aplicación sigue el patrón de **Capa de Repositorio** (Repository Pattern) para separar la UI de la lógica de datos, utilizando técnicas de programación asíncrona avanzada.
-
-| Componente | Tecnología | Propósito |
-| :--- | :--- | :--- |
-| **Asincronía & Hilos** | **Corrutinas** (`lifecycleScope`, `Dispatchers.IO`) | Ejecución de tareas lentas (API, Base de Datos) sin bloquear el hilo principal (UI). |
-| **Comunicación API** | **Retrofit 2** / **Moshi** | Cliente HTTP robusto para convertir las llamadas de Kotlin en solicitudes POST/GET a los scripts PHP. |
-| **Backend** | **XAMPP (PHP & MySQL)** | Servidor local para alojar los *scripts* de la API y la base de datos `pasteleria_mil_sabores`. |
-| **IA Generativa** | **Gemini (Vía PHP cURL)** | Generación de descripciones de productos y análisis simulado de imágenes. |
-| **Imagen** | **CameraX** / **Base64** | Captura de fotos y codificación a formato de texto para envío y almacenamiento en la base de datos (`LONGTEXT`). |
-
-## 2\. 🗂️ Estructura de Archivos y Responsabilidades (Kotlin)
-
-El proyecto está organizado en paquetes siguiendo una arquitectura modular:
-
-| Paquete | Archivos Principales | Responsabilidad |
-| :--- | :--- | :--- |
-| `ui` | `MainActivity2.kt` (Catálogo), `MainActivity3.kt` (Formulario), `CameraActivity.kt` | **Capa de Presentación:** Muestra la información y maneja eventos de usuario. `MainActivity3` contiene la lógica de Permisos y Launchers. |
-| `repository` | `ProductosApiRepository.kt` | **Capa de Lógica de Datos:** Contiene la lógica `suspend fun` para las Corrutinas. Decide si llamar a una función CRUD o a una función de IA. |
-| `api` | `PasteleriaApiService.kt`, `RetrofitClient.kt` | **Capa de Red:** Define el contrato de la API (`@GET`, `@POST`) y la configuración base de Retrofit. |
-| `model` | `Producto.kt`, `Categoria.kt`, `Respuesta.kt` | **Modelos de Datos:** Clases `data class` para el parseo JSON (Moshi). |
-| `adapter` | `ProductAdapter.kt` | **Visualización:** Maneja el `RecyclerView`. Contiene la lógica de **decodificación y rotación EXIF de la imagen Base64** para mostrar la foto. |
-| `PCamara` | `CameraManager.kt`, `CamaraUtils.kt` | Lógica del profesor para controlar CameraX y codificar el `Bitmap` a Base64. |
+Aplicación móvil desarrollada en **Kotlin (Android)** para la gestión completa del inventario de productos de una pastelería. Esta versión integra una arquitectura híbrida con persistencia local (SQLite) y sincronización con un servidor remoto (MySQL/PHP), e incorpora funcionalidades de Inteligencia Artificial para la automatización de contenido.
 
 -----
 
-## 3\. 🖥️ Layouts y Funcionalidad del CRUD
+## ✨ Características Principales
 
-| Layout (XML) | Uso en la Aplicación | Detalle de la Función |
-| :--- | :--- | :--- |
-| `activity_main2.xml` | **Catálogo/Gestión** | Muestra el listado con `RecyclerView`. Usa **`registerForActivityResult`** en Kotlin para esperar un resultado de `MainActivity3` y recargar la lista automáticamente. |
-| `item_product.xml` | **Ítem del Catálogo** | Muestra la **Imagen Base64** decodificada, nombre, precio y stock. Contiene los botones de **Edición** y **Eliminación** que delegan las acciones a `MainActivity2`. |
-| `activity_main3.xml` | **Formulario** | Contiene todos los `TextInputEditText` con *hints* de ejemplo y el `Spinner` de Categoría. Incluye botones dedicados para las funciones de IA. |
-| `activity_camera.xml` | **Cámara/Galería** | Vista del visor de la cámara. Almacena `PreviewView` y botones para **Tomar Foto** o **Galería**. |
+### 1\. Persistencia Híbrida y Offline-First
 
------
+  * **Sincronización Inteligente:** Utiliza una arquitectura **Offline-First**, permitiendo a la aplicación operar sin conexión.
+  * **Base de Datos Local (SQLite):** Almacenamiento rápido y fiable de todos los productos y categorías en el dispositivo.
+  * **Base de Datos Remota (MySQL/PHP):** Sincronización de datos mediante una API REST desarrollada en PHP (XAMPP).
+  * **Manejo de Conflictos:** El repositorio de datos intenta primero la conexión con PHP, pero si falla (por red o servidor), realiza la operación CRUD **localmente en SQLite** para garantizar la continuidad operativa.
 
-## 4\. 🔗 Configuración del Servidor y Base de Datos
+### 2\. Funcionalidades CRUD Completas
 
-| Componente | Archivo(s) | Función Esencial |
-| :--- | :--- | :--- |
-| **Configuración XAMPP** | `my.ini` (Config), `php.ini` (Config) | **Ajustado el puerto MySQL a `3307`** para evitar el error de "shutdown unexpectedly". Límites de `post_max_size` aumentados a **50M** para aceptar la cadena Base64 de la imagen. |
-| **Base de Datos** | `pasteleria_mil_sabores` (SQL Script) | Creada con las tablas `Productos` y `Categorias`. La columna `imagen_url` está configurada como **`LONGTEXT`** para almacenar el Base64. |
-| **Conexión PHP** | Todos los 6 scripts | Todos los scripts usan la conexión **`new mysqli($host, $user, $pass, $db, 3307)`** para asegurar la comunicación con el puerto no estándar. |
+  * **Create (Crear):** Registro de nuevos productos con código, nombre, precio, stock y stock crítico.
+  * **Read (Leer):** Visualización del catálogo de productos.
+  * **Update (Actualizar):** Edición de datos de productos existentes.
+  * **Delete (Eliminar):** Eliminación de productos, con sincronización de la baja en la base de datos remota.
 
-### Scripts PHP para la API:
+### 3\. Integración de Inteligencia Artificial (Novedad)
 
-| Endpoint (Vía Kotlin) | Script PHP | Tarea en el Servidor |
-| :--- | :--- | :--- |
-| `getProductos()` | `obtener_producto.php` | SELECT \* FROM productos (Devuelve JSON Array). |
-| `postProducto()` | `guardar_producto.php` | **INSERT INTO** productos. Contiene lógica para **limpiar** la cadena Base64. |
-| `updateProducto()` | `actualizar_producto.php` | **UPDATE** producto WHERE id = $id. |
-| `deleteProducto()` | `eliminar_producto.php` | **DELETE** FROM productos WHERE id = $id. |
-| `generarDescripcion()` | `generar_ia.php` | **Llamada cURL a Gemini Pro** para generar texto. |
+Esta entrega introduce la automatización de la carga de productos mediante la integración con APIs de IA:
+
+  * **Generación de Descripciones (Gemini):** Usa el modelo **Gemini / GenerativeModel** para crear automáticamente descripciones atractivas y detalladas del producto, utilizando el nombre y la categoría como *prompt* (instrucción) de entrada.
 
 -----
 
-## 5\. ⭐️ Funcionalidad de Inteligencia Artificial
+## 💻 Configuración del Entorno
 
-Para cumplir con el requisito de IA de forma segura (evitando el error de dependencia en Kotlin), la lógica de Gemini se ejecuta en el *backend* de PHP.
+### A. Back-end (XAMPP / MySQL)
 
-| Función en Kotlin | Modelo Gemini | Proceso de Ejecución |
-| :--- | :--- | :--- |
-| `generarDescripcionIA()` | `gemini-pro` | Kotlin envía el nombre del producto $\rightarrow$ PHP llama a la API REST de Gemini $\rightarrow$ PHP devuelve la descripción generada a Kotlin para rellenar el `EditText`. |
-| `mejorarImagenIA()` | `gemini-pro-vision` | Kotlin envía la Base64 $\rightarrow$ PHP simula el análisis de la imagen $\rightarrow$ PHP devuelve el resultado del análisis (en formato texto) al formulario. |
+Para el correcto funcionamiento, es necesario configurar la base de datos remota:
 
-### Dependencias Clave de Terceros
+1.  **Instalar y Configurar XAMPP:** Instalar XAMPP y asegurar que los módulos **Apache** y **MySQL** estén activos.
+      * **NOTA DE CONFLICTO:** Si el puerto 80 u 8080 está ocupado, Apache debe configurarse para usar un puerto libre (ej: **8081**) en el archivo `httpd.conf`.
+2.  **Crear Base de Datos:** Acceder a PHPMyAdmin y crear la base de datos `pasteleria_mil_sabores`.
+3.  **Ejecutar Script SQL:** Importar la estructura de las tablas `categorias` y `productos`.
 
-```kotlin
-// Build.gradle.kts (Module :app)
+-- 1. ELIMINAR LA BASE DE DATOS EXISTENTE (DROP)
+-- Elimina la base de datos si ya existe, lo cual es útil al recrear el entorno.
+DROP DATABASE IF EXISTS pasteleria_mil_sabores;
 
-implementation("com.squareup.retrofit2:retrofit:2.11.0")
-implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
-implementation("com.google.ai.client.generativeai:generativeai:0.1.0") // SDK de Gemini
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-implementation("androidx.camera:camera-lifecycle:1.3.4")
-implementation("androidx.exifinterface:exifinterface:1.3.6") // Para rotación de imagen
-```
+-- 2. CREAR LA BASE DE DATOS
+CREATE DATABASE pasteleria_mil_sabores
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_general_ci;
+
+-- Seleccionar la base de datos para usarla
+USE pasteleria_mil_sabores;
+
+-- 3. CREAR LA TABLA CATEGORIAS
+-- Usada para clasificar los productos (Tortas, Galletas, etc.).
+CREATE TABLE Categorias (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    PRIMARY KEY (id)
+);
+
+-- 4. CREAR LA TABLA PRODUCTOS
+CREATE TABLE Productos (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    codigo_producto VARCHAR(50) NOT NULL UNIQUE,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion LONGTEXT,
+    precio INT NOT NULL, 
+    stock INT(11) NOT NULL,
+    stock_critico INT(11) DEFAULT 5,
+    imagen_url LONGTEXT, -- Almacena la cadena Base64 o URL
+    categoria_id INT(11) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (categoria_id) REFERENCES Categorias(id) ON DELETE CASCADE
+);
+
+-- 5. POBLAR LA TABLA CATEGORIAS
+INSERT INTO Categorias (nombre) VALUES
+('Tortas'),
+('Cupcakes'),
+('Galletas'),
+('Postres Frios'),
+('Panadería');
+
+-- 7. POBLAR LA TABLA PRODUCTOS (Datos de Prueba)
+INSERT INTO Productos (codigo_producto, nombre, descripcion, precio, stock, stock_critico, imagen_url, categoria_id) VALUES
+('TORTA-001', 'Torta de Chocolate Mil Sabores', 'Una deliciosa torta con tres capas de chocolate, rellena de ganache y cubierta con virutas de cacao.', 18990, 15, 5, 'torta_chocolate.jpg', 1),
+('POSTRE-002', 'Pie de Limón Clásico', 'Base crujiente, relleno de crema de limón ácida y suave merengue tostado.', 12500, 22, 10, 'pie_limon.jpg', 4),
+('GALLETA-003', 'Galletas de Avena y Pasas (Pack x6)', 'Galletas suaves y masticables hechas con avena integral y pasas.', 4500, 50, 10, 'galletas_avena.jpg', 3),
+('PAN-004', 'Pan Amasado (Unidad)', 'Pan tradicional chileno, perfecto para la once, crujiente por fuera y suave por dentro.', 1350, 30, 20, 'pan_amasado.jpg', 5),
+('POSTRE-005', 'Cheesecake de Frutos Rojos', 'Cheesecake cremoso con base de galleta y una cobertura vibrante de salsa de frutos rojos frescos.', 16000, 8, 3, 'cheesecake.jpg', 4);
+
+5.  **Desplegar API:** Colocar los scripts PHP (`config.php`, `guardar_producto.php`, `eliminar_producto.php`, etc.) en la carpeta del servidor web (ej: `C:\xampp\htdocs\pasteleria\`).
+
+### B. Aplicación Android (Kotlin)
+
+1.  **Configuración de IP:** La aplicación debe saber dónde está el servidor XAMPP.
+      * En el archivo **`RetrofitClient.kt`**, configurar la `BASE_URL` con la IP local de tu máquina y el puerto de Apache.
+        ```kotlin
+        // Ejemplo con puerto 8081
+        private const val BASE_URL = "http://192.168.18.64:8081/pasteleria/"
+        ```
+2.  **Tokens de IA:** Las funcionalidades de IA requieren la configuración de las claves de API (Gemini) en el repositorio o *build config* de la aplicación.
+3.  **Compilación:** Sincronizar Gradle y compilar en un dispositivo o emulador conectado a la misma red WiFi que el servidor XAMPP.
+
+-----
+
+## 🛠️ Tecnologías Utilizadas
+
+  * **Lenguaje:** Kotlin
+  * **Persistencia:** SQLite (local)
+  * **Frameworks:** Android SDK
+  * **Networking:** Retrofit, OkHttp
+  * **Base de Datos Remota:** MySQL
+  * **API:** PHP (XAMPP)
+  * **Inteligencia Artificial:** Google Gemini (GenerativeModel), Remove.bg API.
