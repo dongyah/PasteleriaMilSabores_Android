@@ -10,7 +10,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 object DescriptionIARepository {
 
     // constantes de la api
-    private const val GEMINI_API_TOKEN = "AIzaSyDAP-NcunC1l8Q9mCFQA1fTRJHKe7vOSrI"
+    private const val GEMINI_API_TOKEN = "AIzaSyA2OPutJ8Ftpo0WClSiK5BoB2kdMQE0wQI"
 
     // función para generar la descripción del producto usando gemini
     suspend fun generateDescription(nombreProducto: String): Result<String> = withContext(Dispatchers.IO) {
