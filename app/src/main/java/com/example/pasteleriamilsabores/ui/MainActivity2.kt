@@ -22,22 +22,21 @@ import kotlinx.coroutines.launch
 
 class MainActivity2 : AppCompatActivity(), OnItemActionListener {
 
-    // declaraciones de vistas y datos
+    // Declaraciones de Vistas y Datos
     private var productosList: List<Producto> = emptyList()
     private lateinit var recyclerView: RecyclerView
     private lateinit var tvProductsCount: TextView
     private lateinit var productAdapter: ProductAdapter
 
-    // launcher de resultados (refresca lista al volver de mainactivity3)
+    // Launcher de resultados
     private val cargarProductoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            Toast.makeText(this, "Operación exitosa. recargando lista...", Toast.LENGTH_SHORT).show()
-            cargarProductosDesdeApi()
+            Toast.makeText(this, "Operación exitosa.", Toast.LENGTH_SHORT).show()
+            // No cargamos aquí explícitamente porque onResume lo hará al volver
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,55 +50,61 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
         productAdapter = ProductAdapter(productosList, this)
         recyclerView.adapter = productAdapter
 
-        // carga inicial de datos
-        cargarProductosDesdeApi()
+        // NOTA: Quitamos cargarProductosDesdeApi() de aquí para evitar
+        // que se ejecute doble vez (onCreate + onResume).
     }
 
+    // ---------------------------------------------------------------
+    // NUEVO: Sincronización Automática al volver a la pantalla
+    // ---------------------------------------------------------------
+    override fun onResume() {
+        super.onResume()
 
-    // carga los productos desde el repositorio híbrido (php o sqlite)
+        // 1. Carga inmediata de lo que ya existe localmente (SQLite)
+        cargarProductosDesdeApi()
+
+        // 2. Intenta sincronizar cambios pendientes en segundo plano
+        lifecycleScope.launch {
+            // Esta función (que agregamos al Repo) subirá los pendientes si hay internet
+            ProductosApiRepository.sincronizarProductos(applicationContext)
+
+            // 3. Volvemos a cargar por si la sincronización trajo IDs nuevos o actualizaciones
+            cargarProductosDesdeApi()
+        }
+    }
+    // ---------------------------------------------------------------
+
     private fun cargarProductosDesdeApi() {
         lifecycleScope.launch {
-            // llama a getallproductos y pasa el contexto
             val resultado = ProductosApiRepository.getAllProductos(applicationContext)
 
             resultado.onSuccess { productos ->
-                // éxito: los datos llegan correctamente
                 productosList = productos
                 actualizarUI(productosList)
             }.onFailure { exception ->
-                // falla: error de red o bd
-                Toast.makeText(this@MainActivity2, "Error al cargar productos: ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity2, "Error al cargar: ${exception.message}", Toast.LENGTH_LONG).show()
                 Log.e("DB_LOAD", "Fallo al cargar productos", exception)
                 actualizarUI(emptyList())
             }
         }
     }
 
-    // actualizacion de la interfaz
     private fun actualizarUI(productos: List<Producto>) {
-        // 1. contador
         tvProductsCount.text = getString(R.string.products_loaded_count, productos.size)
-
-        // 2. notificar al adaptador que los datos han cambiado
         (recyclerView.adapter as ProductAdapter).updateData(productos)
     }
 
-    // edición: implementa onitemactionlistener
     override fun onEditClicked(productoId: Int) {
         val intent = Intent(this, MainActivity3::class.java).apply {
-            // pasamos el id del producto seleccionado para la edición
             putExtra("PRODUCT_ID", productoId)
         }
-        // usamos el launcher para abrir la actividad
         cargarProductoLauncher.launch(intent)
     }
 
-    // eliminación: implementa onitemactionlistener
     override fun onDeleteClicked(productoId: Int) {
-        // mostrar diálogo de confirmación antes de la eliminación
         AlertDialog.Builder(this)
             .setTitle("Confirmar eliminación")
-            .setMessage("¿Estás seguro de que quieres eliminar el producto id $productoId?")
+            .setMessage("¿Estás seguro de que quieres eliminar el producto ID $productoId?")
             .setPositiveButton("Sí, eliminar") { _, _ ->
                 ejecutarEliminacion(productoId)
             }
@@ -107,30 +112,24 @@ class MainActivity2 : AppCompatActivity(), OnItemActionListener {
             .show()
     }
 
-    // función de ejecución asíncrona para eliminar un producto
     private fun ejecutarEliminacion(productoId: Int) {
         lifecycleScope.launch {
-            // llama a deleteproducto, requiere el contexto y devuelve result<unit>
             val resultado = ProductosApiRepository.deleteProducto(applicationContext, productoId)
 
-            // el resultado es result<unit>, solo verificamos éxito o fallo
             resultado.onSuccess {
-                Toast.makeText(this@MainActivity2, "Éxito: producto eliminado.", Toast.LENGTH_LONG).show()
-                cargarProductosDesdeApi() // refresca la lista inmediatamente
+                Toast.makeText(this@MainActivity2, "Éxito: Producto eliminado.", Toast.LENGTH_LONG).show()
+                cargarProductosDesdeApi()
             }.onFailure { exception ->
-                // captura errores de red si el repositorio falló
                 Toast.makeText(this@MainActivity2, "Error al eliminar: ${exception.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    // botón '+' del xml
     fun onAddProductClicked(view: View) {
         val intent = Intent(this, MainActivity3::class.java)
         cargarProductoLauncher.launch(intent)
     }
 
-    // botón logout del xml
     fun onLogoutClicked(view: View) {
         Toast.makeText(this, "Cerrando sesión.", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, MainActivity::class.java)

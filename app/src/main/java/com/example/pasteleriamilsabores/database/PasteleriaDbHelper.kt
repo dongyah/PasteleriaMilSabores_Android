@@ -24,7 +24,8 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
                 $COL_STOCK INTEGER NOT NULL,
                 $COL_STOCK_CRITICO INTEGER DEFAULT 5,
                 $COL_IMAGEN_URL TEXT,
-                $COL_CATEGORIA_ID INTEGER NOT NULL
+                $COL_CATEGORIA_ID INTEGER NOT NULL,
+                $COL_ES_PENDIENTE INTEGER DEFAULT 0
             );
         """.trimIndent())
 
@@ -60,6 +61,7 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
             put(COL_STOCK_CRITICO, producto.stock_critico)
             put(COL_IMAGEN_URL, producto.imagen_url)
             put(COL_CATEGORIA_ID, producto.categoria_id)
+            put(COL_ES_PENDIENTE, producto.es_pendiente)
         }
         return writableDatabase.insert(TABLE_PRODUCTOS, null, cv)
     }
@@ -84,6 +86,19 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
         c.use {
             return if (it.moveToFirst()) cursorToProducto(it) else null
         }
+    }
+
+    fun getProductosPendientes(): List<Producto> {
+        val out = mutableListOf<Producto>()
+        // Seleccionamos solo los que tienen es_pendiente = 1
+        val sql = "SELECT * FROM $TABLE_PRODUCTOS WHERE $COL_ES_PENDIENTE = 1"
+        val c: Cursor = readableDatabase.rawQuery(sql, null)
+        c.use {
+            while (it.moveToNext()) {
+                out += cursorToProducto(it)
+            }
+        }
+        return out
     }
 
     // actualiza un producto que ya existe
@@ -112,17 +127,19 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
     }
 
     // reemplaza todos los productos con la lista del servidor (para el caché)
+// Reemplaza los productos del caché, PERO respeta los que están pendientes de subir
     fun replaceAllProductos(productos: List<Producto>) {
         val db = writableDatabase
         db.beginTransaction()
         try {
-            // 1. eliminar todos los productos existentes
-            db.execSQL("DELETE FROM $TABLE_PRODUCTOS")
+            // CAMBIO CLAVE: Solo borramos los que NO son pendientes (es_pendiente = 0)
+            // Así tu producto local sobrevive hasta que se sincronice.
+            db.execSQL("DELETE FROM $TABLE_PRODUCTOS WHERE $COL_ES_PENDIENTE = 0")
 
-            // 2. insertar los nuevos productos con su id original de la api
+            // Insertar los nuevos productos que llegaron del servidor
             productos.forEach { producto ->
                 val cv = ContentValues().apply {
-                    put(COL_ID, producto.id) // usamos el id de la api
+                    put(COL_ID, producto.id)
                     put(COL_CODIGO_PRODUCTO, producto.codigo_producto)
                     put(COL_NOMBRE, producto.nombre)
                     put(COL_DESCRIPCION, producto.descripcion)
@@ -131,8 +148,9 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
                     put(COL_STOCK_CRITICO, producto.stock_critico)
                     put(COL_IMAGEN_URL, producto.imagen_url)
                     put(COL_CATEGORIA_ID, producto.categoria_id)
+                    put(COL_ES_PENDIENTE, 0) // Los que vienen del server ya están sincronizados
                 }
-                // usar insertwithonconflict para manejar posibles duplicados
+                // Usamos CONFLICT_REPLACE para que si un ID coincide, se actualice
                 db.insertWithOnConflict(TABLE_PRODUCTOS, null, cv, SQLiteDatabase.CONFLICT_REPLACE)
             }
             db.setTransactionSuccessful()
@@ -172,7 +190,10 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
             stock = it.getInt(it.getColumnIndexOrThrow(COL_STOCK)),
             stock_critico = it.getInt(it.getColumnIndexOrThrow(COL_STOCK_CRITICO)),
             imagen_url = it.getString(it.getColumnIndexOrThrow(COL_IMAGEN_URL)),
-            categoria_id = it.getInt(it.getColumnIndexOrThrow(COL_CATEGORIA_ID))
+            categoria_id = it.getInt(it.getColumnIndexOrThrow(COL_CATEGORIA_ID)),
+            es_pendiente = if (it.getColumnIndex(COL_ES_PENDIENTE) != -1)
+                it.getInt(it.getColumnIndexOrThrow(COL_ES_PENDIENTE))
+            else 0
         )
     }
 
@@ -196,9 +217,9 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
     // 5. constantes
     companion object {
         private const val DB_NAME = "pasteleria_mil_sabores.db"
-        private const val DB_VERSION = 1
+        private const val DB_VERSION = 2
 
-        const val TABLE_PRODUCTOS = "productos"
+        const val TABLE_PRODUCTOS = " productos"
         const val COL_ID = "id"
         const val COL_CODIGO_PRODUCTO = "codigo_producto"
         const val COL_NOMBRE = "nombre"
@@ -212,5 +233,8 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
         const val TABLE_CATEGORIAS = "categorias"
         const val COL_ID_CAT = "id"
         const val COL_NOMBRE_CAT = "nombre"
+
+        const val COL_ES_PENDIENTE = "es_pendiente"
+
     }
 }

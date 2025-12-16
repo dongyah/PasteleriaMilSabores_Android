@@ -11,5 +11,8 @@ data class Producto(
     val stock: Int,
     val stock_critico: Int,
     val imagen_url: String, // Base64
-    val categoria_id: Int
+    val categoria_id: Int,
+
+    //Para la última entrega, le añadiremos un nuevo campo para saber si está sincronizado o no
+    val es_pendiente: Int = 0
 )

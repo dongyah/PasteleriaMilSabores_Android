@@ -10,7 +10,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 object DescriptionIARepository {
 
     // constantes de la api
-    private const val GEMINI_API_TOKEN = "AIzaSyA2OPutJ8Ftpo0WClSiK5BoB2kdMQE0wQI"
+    private const val GEMINI_API_TOKEN = "AIzaSyCS1GMiVWTEzyMlfw3J1WSn7FHJ8EHBGCQ"
 
     // función para generar la descripción del producto usando gemini
     suspend fun generateDescription(nombreProducto: String): Result<String> = withContext(Dispatchers.IO) {
@@ -18,11 +18,14 @@ object DescriptionIARepository {
 
             // definición del prompt para el modelo
             val prompt = """
-                eres un experto pastelero y redactor publicitario. 
-                genera una descripción de producto corta, atractiva y profesional 
-                para una pastelería. máximo 40 palabras.
+                Actúa como un experto copywriter gastronómico.
+                Crea una descripción publicitaria, corta y deliciosa para el producto: "$nombreProducto".
                 
-                producto: "$nombreProducto"
+                Reglas OBLIGATORIAS:
+                1. Máximo 40 palabras.
+                2. Enfócate en el sabor y la textura.
+                3. IMPORTANTE: Responde ÚNICAMENTE con el texto de la descripción. 
+                   NO incluyas saludos, introducciones (como "Aquí tienes"), ni comillas.
             """.trimIndent()
 
             // inicializa el modelo y la api key

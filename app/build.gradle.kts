@@ -36,7 +36,6 @@ android {
     }
 }
 
-// ⭐️ AGREGAR ESTE BLOQUE EN build.gradle (Module: app) ⭐️
 repositories {
     google()
     mavenCentral()

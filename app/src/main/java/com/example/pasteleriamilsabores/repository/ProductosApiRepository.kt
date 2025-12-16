@@ -71,7 +71,7 @@ object ProductosApiRepository {
         withContext(Dispatchers.IO) {
             val dbHelper = PasteleriaDbHelper(context)
 
-            // 1. intentar subir a php
+            // 1. Intentar subir a PHP
             val apiResult = runCatching {
                 apiService.postProducto(
                     codigo = producto.codigo_producto,
@@ -86,31 +86,55 @@ object ProductosApiRepository {
             }
 
             return@withContext if (apiResult.isSuccess) {
-                // 2. éxito en php: guarda también en sqlite
-                dbHelper.use {
-                    val rowId = it.insertProducto(producto)
-                    Log.i("SQLITE_SAVE", "guardado exitoso en php.")
-                    Result.success(rowId)
+                val respuesta = apiResult.getOrThrow()
+
+                if (respuesta.status == "success") {
+                    // 2. ÉXITO ONLINE: Guardar en SQLite marcado como SINCRONIZADO (0)
+                    // Usamos .copy() para cambiar el estado sin modificar el objeto original
+                    try {
+                        dbHelper.use {
+                            val productoSincronizado = producto.copy(es_pendiente = 0)
+                            val rowId = it.insertProducto(productoSincronizado)
+                            Log.i("SQLITE_SAVE", "Guardado exitoso en PHP y replicado en SQLite.")
+                            Result.success(rowId)
+                        }
+                    } catch (e: Exception) {
+                        Log.e("SQLITE_ERROR", "Se guardó en PHP pero falló en SQLite: ${e.message}")
+                        Result.success(1L) // Retornamos éxito porque en el servidor sí quedó
+                    }
+                } else {
+                    // La API respondió pero con error lógico (ej. validación).
+                    // Guardamos localmente como pendiente por seguridad.
+                    Log.w("REPO_SYNC", "API retornó error: ${respuesta.message}. Guardando offline.")
+                    guardarComoPendiente(dbHelper, producto)
                 }
             } else {
-                // 3. FALLBACK OFFLINE: Si falla la red, guardamos SÓLO en SQLite y devolvemos éxito local.
-                try {
-                    val rowId = dbHelper.use { it.insertProducto(producto) }
-
-                    if (rowId > 0) {
-                        Log.w("REPO_SYNC", "guardado offline. requiere sincronización.")
-                        Result.success(rowId)
-                    } else {
-                        // Falla la inserción local (ej. código duplicado)
-                        throw IOException("fallo al guardar en sqlite (revisar código/id duplicado).")
-                    }
-                } catch (e: Exception) {
-                    // Falla incluso el guardado local
-                    Log.e("SQLITE_SAVE", "fallo completo: ${e.message}")
-                    throw IOException("no se pudo guardar el producto. ${e.message}")
-                }
+                // 3. FALLBACK OFFLINE (Fallo de red): Guardar en SQLite como PENDIENTE (1)
+                Log.w("REPO_SYNC", "Fallo de conexión. Guardando localmente para sincronizar después.")
+                guardarComoPendiente(dbHelper, producto)
             }
         }
+
+    // Función auxiliar para no repetir código de guardado offline
+    private fun guardarComoPendiente(dbHelper: PasteleriaDbHelper, producto: Producto): Result<Long> {
+        return try {
+            dbHelper.use {
+                // IMPORTANTE: Aquí marcamos el producto como pendiente (1)
+                val productoPendiente = producto.copy(es_pendiente = 1)
+                val rowId = it.insertProducto(productoPendiente)
+
+                if (rowId > 0) {
+                    Result.success(rowId)
+                } else {
+                    // Si rowId es -1, suele ser porque el código del producto ya existe (UNIQUE constraint)
+                    Result.failure(IOException("No se pudo guardar offline. ¿El código del producto ya existe?"))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("SQLITE_SAVE", "Fallo crítico al guardar offline: ${e.message}")
+            Result.failure(e)
+        }
+    }
 
     // actualiza un producto existente. si php falla, la operación falla.
     suspend fun updateProducto(context: Context, producto: Producto): Result<Unit> =
@@ -152,6 +176,72 @@ object ProductosApiRepository {
                 }
             }
         }
+
+    // Sincronización: Sube los productos pendientes (es_pendiente = 1) al servidor
+    suspend fun sincronizarProductos(context: Context) {
+        withContext(Dispatchers.IO) {
+            val dbHelper = PasteleriaDbHelper(context)
+
+            // 1. Buscar qué productos están pendientes
+            // (Asegúrate de haber creado esta función en PasteleriaDbHelper como te indiqué antes)
+            val pendientes = try {
+                dbHelper.use { it.getProductosPendientes() }
+            } catch (e: Exception) {
+                emptyList()
+            }
+
+            if (pendientes.isEmpty()) {
+                Log.i("SYNC", "Nada pendiente para subir.")
+                return@withContext
+            }
+
+            Log.i("SYNC", "Iniciando sincronización de ${pendientes.size} productos...")
+
+            var cambiosRealizados = false
+
+            // 2. Intentar subir cada uno
+            pendientes.forEach { producto ->
+                val result = runCatching {
+                    apiService.postProducto(
+                        codigo = producto.codigo_producto,
+                        nombre = producto.nombre,
+                        descripcion = producto.descripcion,
+                        precio = producto.precio,
+                        stock = producto.stock,
+                        stockCritico = producto.stock_critico,
+                        imagenUrl = producto.imagen_url,
+                        categoriaId = producto.categoria_id
+                    )
+                }
+
+                if (result.isSuccess) {
+                    val respuesta = result.getOrThrow()
+                    if (respuesta.status == "success") {
+                        // ÉXITO: Marcar como sincronizado en SQLite (es_pendiente = 0)
+                        try {
+                            dbHelper.use {
+                                // Importante: actualizamos usando el ID local para encontrarlo
+                                val actualizado = producto.copy(es_pendiente = 0)
+                                it.updateProducto(actualizado)
+                            }
+                            Log.i("SYNC", "Producto '${producto.nombre}' sincronizado correctamente.")
+                            cambiosRealizados = true
+                        } catch (e: Exception) {
+                            Log.e("SYNC", "Error al actualizar estado local: ${e.message}")
+                        }
+                    }
+                } else {
+                    Log.e("SYNC", "Fallo al subir '${producto.nombre}'. Se intentará en la próxima conexión.")
+                }
+            }
+
+            // 3. Si hubo cambios, forzar una recarga completa desde el servidor para tener los IDs reales
+            if (cambiosRealizados) {
+                Log.i("SYNC", "Sincronización completada. Recargando datos...")
+                getAllProductos(context)
+            }
+        }
+    }
 
     // elimina un producto. si php falla, cambia a sqlite
     suspend fun deleteProducto(context: Context, id: Int): Result<Unit> =
