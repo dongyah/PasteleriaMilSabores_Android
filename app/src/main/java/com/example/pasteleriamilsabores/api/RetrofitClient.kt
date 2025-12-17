@@ -10,7 +10,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 object RetrofitClient {
 
     // IP del pc (XAMPP). 10.0.2.2 es para el emulador.
-    private const val BASE_URL = "http://192.168.100.35/pasteleria/"
+
+    // IP BELÉN.
+    //private const val BASE_URL = "http://192.168.100.35/pasteleria/"
+
+    //IP DUOC ALUMNOS
+    private const val BASE_URL = "http://10.31.224.28/pasteleria/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

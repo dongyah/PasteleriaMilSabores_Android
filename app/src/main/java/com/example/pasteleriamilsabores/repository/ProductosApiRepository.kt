@@ -64,9 +64,7 @@ object ProductosApiRepository {
             }
         }
 
-    // operaciones de escritura (create/update/delete - híbrido)
 
-    // crea un nuevo producto. si php falla, guarda en sqlite y espera sincronizar.
     suspend fun insertProducto(context: Context, producto: Producto): Result<Long> =
         withContext(Dispatchers.IO) {
             val dbHelper = PasteleriaDbHelper(context)
@@ -89,8 +87,7 @@ object ProductosApiRepository {
                 val respuesta = apiResult.getOrThrow()
 
                 if (respuesta.status == "success") {
-                    // 2. ÉXITO ONLINE: Guardar en SQLite marcado como SINCRONIZADO (0)
-                    // Usamos .copy() para cambiar el estado sin modificar el objeto original
+
                     try {
                         dbHelper.use {
                             val productoSincronizado = producto.copy(es_pendiente = 0)
@@ -103,13 +100,10 @@ object ProductosApiRepository {
                         Result.success(1L) // Retornamos éxito porque en el servidor sí quedó
                     }
                 } else {
-                    // La API respondió pero con error lógico (ej. validación).
-                    // Guardamos localmente como pendiente por seguridad.
                     Log.w("REPO_SYNC", "API retornó error: ${respuesta.message}. Guardando offline.")
                     guardarComoPendiente(dbHelper, producto)
                 }
             } else {
-                // 3. FALLBACK OFFLINE (Fallo de red): Guardar en SQLite como PENDIENTE (1)
                 Log.w("REPO_SYNC", "Fallo de conexión. Guardando localmente para sincronizar después.")
                 guardarComoPendiente(dbHelper, producto)
             }
@@ -164,7 +158,6 @@ object ProductosApiRepository {
                 Log.i("REPO_SYNC", "update exitoso en php y sqlite.")
                 Result.success(Unit)
             } else {
-                // 3. FALLBACK OFFLINE: Si falla la red, actualizamos SÓLO en SQLite.
                 val localRows = dbHelper.use { it.updateProducto(producto) }
 
                 if (localRows > 0) {

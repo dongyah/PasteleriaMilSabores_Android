@@ -8,6 +8,7 @@
     android:background="#F7F7F7"
     tools:context=".ui.MainActivity">
 
+
     <!-- Contenedor central (Simula la tarjeta de la app) -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -24,6 +25,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
         <!-- Título principal -->
         <TextView
             android:id="@+id/tvTitle"
@@ -38,6 +40,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
+
 
         <!-- Subtítulo -->
         <TextView
@@ -54,6 +57,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTitle"
             app:layout_constraintVertical_bias="0.1" />
 
+
         <!-- Campo de Usuario -->
         <EditText
             android:id="@+id/etUsername"
@@ -67,6 +71,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvSubtitle" />
+
 
         <!-- Campo de Contraseña -->
         <EditText
@@ -82,6 +87,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etUsername" />
 
+
         <!-- Botón de Ingreso -->
         <Button
             android:id="@+id/btnLogin"
@@ -90,7 +96,7 @@
             android:layout_marginTop="32dp"
             android:backgroundTint="#C32C52"
             android:padding="16dp"
-            android:text="INGRESAR"
+            android:text="Ingresar"
             android:textSize="18sp"
             android:textStyle="bold"
             app:cornerRadius="12dp"
@@ -98,18 +104,39 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etPassword" />
 
+
+        <Button
+            android:id="@+id/btnGoogleLogin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Continuar con Google"
+            android:textColor="#4A4A4A"
+            android:padding="16dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+
+
         <!-- Credenciales de referencia -->
         <TextView
+            android:id="@+id/tvCredenciales"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="Credenciales de prueba: admin / 123"
             android:textColor="#A0A0A0"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+            app:layout_constraintTop_toBottomOf="@+id/btnGoogleLogin" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

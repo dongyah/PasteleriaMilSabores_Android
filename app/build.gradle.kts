@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -36,11 +37,6 @@ android {
     }
 }
 
-repositories {
-    google()
-    mavenCentral()
-}
-
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -52,6 +48,16 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    // dependencias de firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth")
+    //dependencias para Sing in with google
+    implementation("androidx.credentials:credentials:1.5.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+
+
 
     // --- DEPENDENCIAS MOSHI Y RETROFIT ---
 
@@ -77,6 +83,7 @@ dependencies {
 
     implementation("androidx.exifinterface:exifinterface:1.3.6")
 
-    // ⭐️ DEPENDENCIA DE GOOGLE GENERATIVE AI (GEMINI)
-    implementation("com.google.ai.client.generativeai:generativeai:0.5.0")    //
+    // DEPENDENCIA DE GOOGLE GENERATIVE AI (GEMINI)
+    implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
+
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "889505885770",
+    "project_id": "pasteleria-mil-sabores-2046d",
+    "storage_bucket": "pasteleria-mil-sabores-2046d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:889505885770:android:972fe92c939f5644da00b3",
+        "android_client_info": {
+          "package_name": "com.example.pasteleriamilsabores"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "889505885770-1ldmebs5mulgu5k0dif46dqppic4rgc5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pasteleriamilsabores",
+            "certificate_hash": "a6147b3b1c3d455a83340f665878a908dc11b2bf"
+          }
+        },
+        {
+          "client_id": "889505885770-cd4n9tq3f20fed1gltna4cal650t1jb4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pasteleriamilsabores",
+            "certificate_hash": "c27a39c93da3453d7f3fde0bd07be20374f3c648"
+          }
+        },
+        {
+          "client_id": "889505885770-t7q7oh36konau75hnkpcmk9scc0l37jd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhBkVxtzjJ-PPY3emUL5QY1aqsKLgtRBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "889505885770-t7q7oh36konau75hnkpcmk9scc0l37jd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

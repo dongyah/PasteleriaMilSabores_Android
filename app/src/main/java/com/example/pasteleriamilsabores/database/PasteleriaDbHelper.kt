@@ -10,8 +10,6 @@ import com.example.pasteleriamilsabores.model.Categoria
 
 class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
-    // 1. creación y actualización de la base de datos para sqlite
-    // esta clase es solo para el CRUD con SQLITE
     override fun onCreate(db: SQLiteDatabase) {
         // crear tabla productos
         db.execSQL("""
@@ -132,8 +130,7 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
         val db = writableDatabase
         db.beginTransaction()
         try {
-            // CAMBIO CLAVE: Solo borramos los que NO son pendientes (es_pendiente = 0)
-            // Así tu producto local sobrevive hasta que se sincronice.
+
             db.execSQL("DELETE FROM $TABLE_PRODUCTOS WHERE $COL_ES_PENDIENTE = 0")
 
             // Insertar los nuevos productos que llegaron del servidor
@@ -150,7 +147,6 @@ class PasteleriaDbHelper(context: Context) : SQLiteOpenHelper(context, DB_NAME, 
                     put(COL_CATEGORIA_ID, producto.categoria_id)
                     put(COL_ES_PENDIENTE, 0) // Los que vienen del server ya están sincronizados
                 }
-                // Usamos CONFLICT_REPLACE para que si un ID coincide, se actualice
                 db.insertWithOnConflict(TABLE_PRODUCTOS, null, cv, SQLiteDatabase.CONFLICT_REPLACE)
             }
             db.setTransactionSuccessful()
